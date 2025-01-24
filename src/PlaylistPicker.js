@@ -4,7 +4,7 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady }) {
   let accessToken = null;
   let tokenExpiryTime = null;
 
-  
+
 
   // Fonction pour récupérer le jeton d'accès
   const fetchAccessToken = async () => {
@@ -153,8 +153,8 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady }) {
       url: track.track.external_urls.spotify,
     }));
 
-    setTracks(fetchedTracks);
-    setBlindtest(fetchedBlindtest);
+    setTracks((prevTracks) => [...prevTracks, ...fetchedTracks]);
+    setBlindtest((prevBlindtest) => [...prevBlindtest, ...fetchedBlindtest]);
     console.log('Fetched blindtest:', fetchedBlindtest);
   };
 
