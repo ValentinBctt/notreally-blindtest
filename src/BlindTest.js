@@ -148,7 +148,9 @@ export function BlindTest({ blindtestReady }) {
             <div>
               <button onClick={handlePlay}>Jouer</button>
               <button onClick={handleNext}>Piste suivante</button>
-              <button ref={togglePlayButtonRef}>Toggle Play</button>
+              <p>
+                Piste actuelle : {blindtestReady[currentTrackIndex].name} par{" "}
+                {blindtestReady[currentTrackIndex].artist}</p>  
             </div>
           ) : (
             <p>Chargement du lecteur...</p>
