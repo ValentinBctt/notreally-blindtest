@@ -4,8 +4,12 @@ export function AddPlayer({ players, setPlayers }) {
   const [newPlayer, setNewPlayer] = useState("");
 
   const handleAddPlayer = () => {
-    setPlayers([...players, newPlayer]);
+    if (newPlayer.trim() !== "") {
+      setPlayers([...players, newPlayer]);
+      setNewPlayer(""); // Réinitialiser le champ de saisie après l'ajout
+    }
   };
+
   return (
     <div>
       <h1>Add Player</h1>

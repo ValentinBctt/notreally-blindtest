@@ -1,13 +1,74 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 
-export function BlindTest({ blindtestReady }) {
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+export const handlePlay = async ({ deviceId, blindtestReady, currentTrackIndex, accessToken }) => {
+  if (!deviceId) {
+    console.error("Le lecteur n'est pas encore prêt.");
+    return;
+  }
+
+  const track = blindtestReady[currentTrackIndex];
+  if (!track) {
+    console.error("La piste n'est pas disponible.");
+    return;
+  }
+
+  const trackUri = track.url.replace(
+    "https://open.spotify.com/track/",
+    "spotify:track:"
+  );
+
+  try {
+    await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ uris: [trackUri] }),
+    });
+    console.log(`Lecture de la piste : ${trackUri}`);
+  } catch (error) {
+    console.error("Erreur lors de la lecture :", error);
+  }
+};
+
+export const handleNext = (currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken) => {
+  if (!blindtestReady || !Array.isArray(blindtestReady)) {
+    console.error("blindtestReady n'est pas défini ou n'est pas un tableau.");
+    return;
+  }
+
+  const nextIndex = (currentTrackIndex + 1) % blindtestReady.length;
+  setCurrentTrackIndex(nextIndex);
+  handlePlay({ deviceId, blindtestReady, currentTrackIndex: nextIndex, accessToken });
+};
+
+const getTrackDetails = async (trackId, accessToken) => {
+  try {
+    const response = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch track details');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Erreur lors de la récupération des détails de la piste :", error);
+    return null;
+  }
+};
+
+export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIndex }) {
   const [hasStarted, setHasStarted] = useState(false);
   const [player, setPlayer] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [deviceId, setDeviceId] = useState(null);
   const [accessToken, setAccessToken] = useState(localStorage.getItem("spotify_access_token"));
+  const [trackDetails, setTrackDetails] = useState(null);
   const togglePlayButtonRef = useRef(null);
   const navigate = useNavigate();
 
@@ -94,40 +155,22 @@ export function BlindTest({ blindtestReady }) {
     }
   }, [player]);
 
-  const handleStart = () => {
-    setHasStarted(true);
-    handlePlay();
-  };
+  useEffect(() => {
+    if (blindtestReady[currentTrackIndex]) {
+      const trackId = blindtestReady[currentTrackIndex].url.split('/').pop();
+      getTrackDetails(trackId, accessToken).then(details => {
+        setTrackDetails(details);
+      });
+    }
+  }, [currentTrackIndex, blindtestReady, accessToken]);
 
-  const handlePlay = async () => {
+  const handleStart = () => {
     if (!deviceId) {
       console.error("Le lecteur n'est pas encore prêt.");
       return;
     }
-
-    const trackUri = blindtestReady[currentTrackIndex].url.replace(
-      "https://open.spotify.com/track/",
-      "spotify:track:"
-    );
-
-    try {
-      await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ uris: [trackUri] }),
-      });
-    } catch (error) {
-      console.error("Erreur lors de la lecture :", error);
-    }
-  };
-
-  const handleNext = () => {
-    const nextIndex = (currentTrackIndex + 1) % blindtestReady.length;
-    setCurrentTrackIndex(nextIndex);
-    handlePlay();
+    setHasStarted(true);
+    handlePlay({ deviceId, blindtestReady, currentTrackIndex, accessToken });
   };
 
   const handleLogout = () => {
@@ -135,6 +178,7 @@ export function BlindTest({ blindtestReady }) {
     setAccessToken(null);
     navigate('/');
   };
+
 
   return (
     <div>
@@ -146,11 +190,17 @@ export function BlindTest({ blindtestReady }) {
         <div>
           {isInitialized ? (
             <div>
-              <button onClick={handlePlay}>Jouer</button>
-              <button onClick={handleNext}>Piste suivante</button>
-              <p>
-                Piste actuelle : {blindtestReady[currentTrackIndex].name} par{" "}
-                {blindtestReady[currentTrackIndex].artist}</p>  
+              <button onClick={() => handlePlay({ deviceId, blindtestReady, currentTrackIndex, accessToken })}>Jouer</button>
+              <button onClick={() => handleNext(currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken)}>Piste suivante</button>
+              <button ref={togglePlayButtonRef}>Toggle Play</button>
+              {trackDetails ? (
+                <p>
+                  Piste actuelle : {trackDetails.name || "Inconnue"} par{" "}
+                  {trackDetails.artists?.map(artist => artist.name).join(", ") || "Inconnus"}
+                </p>
+              ) : (
+                <p>Chargement des détails de la piste...</p>
+              )}
             </div>
           ) : (
             <p>Chargement du lecteur...</p>

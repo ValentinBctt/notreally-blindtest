@@ -14,7 +14,7 @@ function App() {
     acc[player] = 0;
     return acc;
   }, {}));
-
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   return (
     <Router>
       <div className="App">
@@ -24,12 +24,24 @@ function App() {
             path="/"
             element={
               <>
-                <AddPlayer players={players} setPlayers={setPlayers} scores={scores} setScores={setScores} />
-                <ScoreAdder players={players} />
+                <AddPlayer
+                players={players}
+                setPlayers={setPlayers}
+                scores={scores}
+                setScores={setScores}
+                 />
+                <ScoreAdder
+                players={players}
+                currentTrackIndex={currentTrackIndex}
+                setCurrentTrackIndex={setCurrentTrackIndex}
+                blindtestReady={blindtestReady}
+                scores={scores}
+                setScores={setScores}
+            />
                 {/* Passer setBlindtestReady comme prop */}
                 <PlaylistPicker setBlindtestReady={setBlindtestReady} />
                 {/* Passer blindtestReady comme prop */}
-                <BlindTest blindtestReady={blindtestReady} />
+                <BlindTest blindtestReady={blindtestReady} currentTrackIndex={currentTrackIndex} setCurrentTrackIndex={setCurrentTrackIndex}/>
               </>
             }
           />
