@@ -8,6 +8,8 @@ import { AddPlayer } from "./AddPlayer";
 import { ScoreAdder } from "./ScoreAdder";
 
 function App() {
+  const [playlistsNames, setPlaylistsNames] = useState([]);
+  const [playlistOwner, setPlaylistOwner] = useState([]);
   const [blindtestReady, setBlindtestReady] = useState([]); // État pour le blindtest
   const [players, setPlayers] = useState([]); // État pour les joueurs
   const [scores, setScores] = useState(players.reduce((acc, player) => {
@@ -39,9 +41,21 @@ function App() {
                 setScores={setScores}
             />
                 {/* Passer setBlindtestReady comme prop */}
-                <PlaylistPicker setBlindtestReady={setBlindtestReady} />
+                <PlaylistPicker
+                setBlindtestReady={setBlindtestReady}
+                playlistsNames={playlistsNames}
+                setPlaylistsNames={setPlaylistsNames}
+                playlistOwner={playlistOwner}
+                setPlaylistOwner={setPlaylistOwner} />
                 {/* Passer blindtestReady comme prop */}
-                <BlindTest blindtestReady={blindtestReady} currentTrackIndex={currentTrackIndex} setCurrentTrackIndex={setCurrentTrackIndex}/>
+                <BlindTest
+                 blindtestReady={blindtestReady}
+                currentTrackIndex={currentTrackIndex}
+                setCurrentTrackIndex={setCurrentTrackIndex}
+                playlistsNames={playlistsNames}
+                setPlaylistsNames={setPlaylistsNames}
+                playlistOwner={playlistOwner}
+                setPlaylistOwner={setPlaylistOwner}/>
               </>
             }
           />

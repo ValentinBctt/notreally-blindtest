@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function PlaylistPicker({ setBlindtestReady, blindtestReady }) {
+export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNames, setPlaylistsNames, playlistOwner, setPlaylistOwner }) {
   let accessToken = null;
   let tokenExpiryTime = null;
 
@@ -110,8 +110,7 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady }) {
   };
 
   const [playlistLink, setPlaylistLink] = useState("");
-  const [playlistsNames, setPlaylistsNames] = useState([]);
-  const [playlistOwner, setPlaylistOwner] = useState([]);
+
   const [tracks, setTracks] = useState([]);
   const [blindtest, setBlindtest] = useState([]);
 
@@ -176,7 +175,7 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady }) {
   return (
     <div>
       <h1>Playlist link</h1>
-      <input type="text" value={playlistLink} onChange={handleAddPlaylist} />
+      <input type="text" value={playlistLink} onChange={handleAddPlaylist} placeholder="Playlist link" />
       <div className="list-playlist">
         <button onClick={handleButtonClick}>Fetch Playlist Tracks</button>
         <ul>

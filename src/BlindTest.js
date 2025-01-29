@@ -62,7 +62,7 @@ const getTrackDetails = async (trackId, accessToken) => {
   }
 };
 
-export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIndex }) {
+export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIndex, playlistsNames, setPlaylistsNames, playlistOwner, setPlaylistOwner }) {
   const [hasStarted, setHasStarted] = useState(false);
   const [player, setPlayer] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -173,31 +173,47 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     handlePlay({ deviceId, blindtestReady, currentTrackIndex, accessToken });
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("spotify_access_token");
-    setAccessToken(null);
-    navigate('/');
-  };
+  useEffect(() => {
+    // Lancer un timer de 30 secondes
+    const timer = setTimeout(() => {
+      handleNext(
+        currentTrackIndex,
+        setCurrentTrackIndex,
+        blindtestReady,
+        deviceId,
+        accessToken
+      );
+    }, 30000);
+
+    // Nettoyer le timer si le composant est démonté ou si le track change
+    return () => clearTimeout(timer);
+  }, [currentTrackIndex, blindtestReady, deviceId, accessToken]);
 
 
   return (
-    <div>
-      <h1>Blind Test</h1>
-      <button onClick={handleLogout}>Déconnecter Spotify</button>
+    <div className="blindtest">
+      <h1>The song was</h1>
+
       {!hasStarted ? (
         <button onClick={handleStart}>Démarrer le Blind Test</button>
       ) : (
         <div>
           {isInitialized ? (
             <div>
-              <button onClick={() => handlePlay({ deviceId, blindtestReady, currentTrackIndex, accessToken })}>Jouer</button>
-              <button onClick={() => handleNext(currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken)}>Piste suivante</button>
-              <button ref={togglePlayButtonRef}>Toggle Play</button>
+
               {trackDetails ? (
+                  <div className="track-details ">
                 <p>
-                  Piste actuelle : {trackDetails.name || "Inconnue"} par{" "}
+                  <div className="cover">
+                  <img src={trackDetails.album.images[0].url} alt="Album cover" style={{ width: '100px', height: '100px' }} />
+                  </div>
+                  <div classsName="track-info">
+                  {trackDetails.name || "Inconnue"} - {" "}
+                  <br />
                   {trackDetails.artists?.map(artist => artist.name).join(", ") || "Inconnus"}
+                  </div>
                 </p>
+                  </div>
               ) : (
                 <p>Chargement des détails de la piste...</p>
               )}
