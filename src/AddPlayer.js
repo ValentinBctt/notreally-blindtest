@@ -10,10 +10,15 @@ export function AddPlayer({ players, setPlayers, showAddPlayer, setShowAddPlayer
       alert("Maximum 9 players allowed");
     }
   };
+
   const handleAddPlayer = () => {
     if (newPlayer.trim() !== "") {
-      addPlayer(newPlayer);
-      setNewPlayer(""); // Réinitialiser le champ de saisie après l'ajout
+      if (newPlayer.length <= 9) {
+        addPlayer(newPlayer);
+        setNewPlayer(""); // Réinitialiser le champ de saisie après l'ajout
+      } else {
+        alert("Player name cannot exceed 9 letters");
+      }
     }
   };
 

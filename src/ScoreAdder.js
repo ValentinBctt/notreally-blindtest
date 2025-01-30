@@ -42,7 +42,8 @@ export function ScoreAdder({ players, scores, setScores, currentTrackIndex, setC
       <h1>Who's got the point ?</h1>
       {players.map((player) => (
         <button className="score" key={player} onClick={() => { handleScoreChange(player);  }}>
-          {player} {scores[player] || 0}
+          {player} <br />{scores[player]|| 0} {scores[player] === 1 ? 'pt' : 'pts'}
+
         </button>
       ))}
     </div>

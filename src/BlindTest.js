@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, use } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 
 export const handlePlay = async ({ deviceId, blindtestReady, currentTrackIndex, accessToken }) => {
@@ -62,6 +62,29 @@ const getTrackDetails = async (trackId, accessToken) => {
   }
 };
 
+const refreshAccessToken = async (refreshToken) => {
+  const clientId = '4cab9bcc279f483da32c1e5b4bf4bde8'; // Remplacez par votre client ID
+  const clientSecret = '680cf0ba73184ad39957188f582de497'; // Remplacez par votre client secret
+
+  const credentials = btoa(`${clientId}:${clientSecret}`);
+  const response = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Basic ${credentials}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: `grant_type=refresh_token&refresh_token=${refreshToken}`,
+  });
+
+  if (!response.ok) {
+    console.error('Failed to refresh access token:', response.statusText);
+    return null;
+  }
+
+  const data = await response.json();
+  return data.access_token;
+};
+
 export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIndex, playlistsNames,
   setPlaylistsNames, playlistOwner, setPlaylistOwner, showBlindtest, setShowScoreAdder, setShowListening }) {
   const [hasStarted, setHasStarted] = useState(false);
@@ -69,6 +92,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
   const [isInitialized, setIsInitialized] = useState(false);
   const [deviceId, setDeviceId] = useState(null);
   const [accessToken, setAccessToken] = useState(localStorage.getItem("spotify_access_token"));
+  const [refreshToken, setRefreshToken] = useState(localStorage.getItem("spotify_refresh_token"));
   const [trackDetails, setTrackDetails] = useState(null);
   const togglePlayButtonRef = useRef(null);
   const navigate = useNavigate();
@@ -79,16 +103,30 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     const hash = window.location.hash;
     const params = new URLSearchParams(hash.substring(1));
     const token = params.get("access_token");
+    const refreshToken = params.get("refresh_token");
 
-    if (token) {
+    if (token && refreshToken) {
       setAccessToken(token);
+      setRefreshToken(refreshToken);
       localStorage.setItem("spotify_access_token", token);
+      localStorage.setItem("spotify_refresh_token", refreshToken);
       window.history.pushState({}, null, window.location.pathname);
     } else if (!accessToken) {
       const authUrl = `https://accounts.spotify.com/authorize?client_id=4cab9bcc279f483da32c1e5b4bf4bde8&response_type=token&redirect_uri=http://localhost:3000/callback&scope=streaming%20user-read-playback-state%20user-modify-playback-state%20user-read-private`;
       window.location.href = authUrl;
     }
-  }, [accessToken]);
+  }, [accessToken, refreshToken]);
+
+  useEffect(() => {
+    if (!accessToken && refreshToken) {
+      refreshAccessToken(refreshToken).then(newAccessToken => {
+        if (newAccessToken) {
+          setAccessToken(newAccessToken);
+          localStorage.setItem("spotify_access_token", newAccessToken);
+        }
+      });
+    }
+  }, [refreshToken]);
 
   useEffect(() => {
     if (!accessToken) return;
@@ -127,6 +165,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
 
       spotifyPlayer.addListener("player_state_changed", (state) => {
         console.log("État du lecteur :", state);
+        setIsPlaying(!state.paused);
       });
 
       spotifyPlayer.connect();
@@ -182,7 +221,6 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     setIsPlaying(!isPlaying);
   }
 
-
   useEffect(() => {
     // Lancer un timer de 30 secondes si la musique est en lecture
     if (isPlaying) {
@@ -201,7 +239,6 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
 
     }
   }, [currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken, isPlaying]);
-
 
   useEffect(() => {
     if (isPlaying) {
@@ -222,7 +259,6 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     }
   }, [isPlaying, currentTrackIndex, setShowTrackDetails, setShowScoreAdder]);
 
-
   if (!showBlindtest) {
     return null;
   }
@@ -230,10 +266,8 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
   return (
     <div className="gradient">
     <div className="blindtest">
-
-
       {!hasStarted ? (
-        <button onClick={() => { handleStart(); handleIsPlaying(); }}>Start Blind Test</button>
+        <button className="start" onClick={() => { handleStart(); handleIsPlaying(); }}>Start Blind Test</button>
       ) : (
         <div>
           {isInitialized ? (

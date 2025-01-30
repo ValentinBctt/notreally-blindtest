@@ -120,9 +120,9 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
   };
 
   const [playlistLink, setPlaylistLink] = useState("");
-
   const [tracks, setTracks] = useState([]);
   const [blindtest, setBlindtest] = useState([]);
+  const [isLoading, setIsLoading] = useState(false); // État de chargement
 
   // Fonction pour ajouter un lien de playlist
   const handleAddPlaylist = (event) => {
@@ -131,12 +131,14 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
 
   // Fonction pour récupérer les informations de la playlist
   const handleButtonClick = async () => {
+    setIsLoading(true); // Début du chargement
     const playlistId = playlistLink.split('/').pop().split('?')[0];
 
     // Fetch playlist name
     const fetchedName = await fetchPlaylistName(playlistId);
     if (!fetchedName) {
       console.error('Failed to fetch playlist name');
+      setIsLoading(false); // Fin du chargement
       return;
     }
 
@@ -146,6 +148,7 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
     const fetchedOwner = await fetchPlaylistOwner(playlistId);
     if (!fetchedOwner) {
       console.error('Failed to fetch playlist owner');
+      setIsLoading(false); // Fin du chargement
       return;
     }
 
@@ -155,6 +158,7 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
     const fetchedTracks = await fetchPlaylistTracks(playlistId);
     if (!fetchedTracks) {
       console.error('Failed to fetch playlist tracks');
+      setIsLoading(false); // Fin du chargement
       return;
     }
 
@@ -168,6 +172,7 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
 
     // Clear the input field
     setPlaylistLink("");
+    setIsLoading(false); // Fin du chargement
   };
 
   // Fonction pour mélanger la playlist
@@ -187,8 +192,6 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
     setShowPlaylistPicker(false);
     setShowAddPlayer(false);
     setShowBlindtest(true);
-
-
   };
 
   const handleKeyPress = (event) => {
@@ -213,7 +216,9 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
           ))}
         </ul>
       </div>
-      <button onClick={handleMergePlaylist}>Merge Playlist</button>
+      <button className="merge" onClick={handleMergePlaylist} disabled={isLoading}>
+        {isLoading ? `Adding songs` : "Merge Playlist"}
+      </button>
     </div>
   );
 }

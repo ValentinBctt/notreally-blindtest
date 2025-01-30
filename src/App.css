@@ -18,11 +18,12 @@ body {
   background-color: rgb(34, 34, 34);
   height: 100vh;
   overflow: hidden;
-  margin: 3rem 1rem;
+
 }
 
 h1 {
   font-family: "ClashDisplay-Medium";
+  font-size: 2rem;
   background: var(--linear);
   -webkit-background-clip: text;
   color: transparent;
@@ -31,6 +32,7 @@ h1 {
 p {
   font-family: "ClashDisplay-Medium";
   color: white;
+  font-family: 2rem;
 }
 
 li {
@@ -45,6 +47,7 @@ input {
   margin: 0.5rem;
   border: solid 3px var(--jaune);
   transition: ease 0.2s;
+  width: 12rem;
 }
 
 input:focus {
@@ -58,12 +61,28 @@ button {
   padding: 0.5rem;
   margin: 0.5rem;
   border: none;
-  transition: ease 0.2s;
+  transition: transform 0.1s ease 0s; /* Changed transition duration to 0.1s */
   background: var(--linear);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
-  border: solid 1px var(--jaune);
+  border: solid 1.5px var(--jaune);
   padding: 0.7rem;
+
+  &:active {
+    transform: scale(0.9);
+  }
+}
+
+button.merge {
+  margin-top: 2rem;
+  width: 80%;
+  font-size: 2rem;
+  border-radius: 50px;
+}
+
+.add-player {
+  margin-top: 10rem;
 }
 
 .add-player button {
@@ -72,9 +91,24 @@ button {
   padding: 0;
 }
 
+button.start {
+  font-size: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  width: 70%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  &:active {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+}
+
 .track-details {
   background-color: rgba(0, 0, 0, 0.4);
-
+  margin: 3rem 2rem;
   border-radius: 50px;
   backdrop-filter: blur(5px);
   padding: 0.5rem;
@@ -85,23 +119,30 @@ button {
 }
 
 .score-adder {
-  grid-template-columns: 3;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
 }
 
 button.score {
+  font-size: 1.2rem;
   background-color: rgba(0, 0, 0, 0.5);
-
+  transition: transform 0.2s ease 0s;
   border: none;
   border-radius: 15px;
   color: white;
   backdrop-filter: blur(40px);
   padding: 0.5rem;
-  height: 6rem;
-  width: 6rem;
+  height: 7rem;
+  width: 7rem;
   box-shadow:
     0 -2px 5px 0px #FFD620,
     0 2px 5px 0px #D43A3A,
     0 1px 5px 0px #FFD100;
+
+    &:active {
+      transform: scale(0.9);
+    }
 }
 
 
