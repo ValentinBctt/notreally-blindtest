@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import { useNavigate } from 'react-router-dom';
 
 export const handlePlay = async ({ deviceId, blindtestReady, currentTrackIndex, accessToken }) => {
@@ -62,7 +62,8 @@ const getTrackDetails = async (trackId, accessToken) => {
   }
 };
 
-export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIndex, playlistsNames, setPlaylistsNames, playlistOwner, setPlaylistOwner }) {
+export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIndex, playlistsNames,
+  setPlaylistsNames, playlistOwner, setPlaylistOwner, showBlindtest, setShowScoreAdder, setShowListening }) {
   const [hasStarted, setHasStarted] = useState(false);
   const [player, setPlayer] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -71,6 +72,8 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
   const [trackDetails, setTrackDetails] = useState(null);
   const togglePlayButtonRef = useRef(null);
   const navigate = useNavigate();
+  const [showTrackDetails, setShowTrackDetails] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -170,52 +173,91 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
       return;
     }
     setHasStarted(true);
+
     handlePlay({ deviceId, blindtestReady, currentTrackIndex, accessToken });
+    setShowListening(true);
   };
 
+  const handleIsPlaying = () => {
+    setIsPlaying(!isPlaying);
+  }
+
+
   useEffect(() => {
-    // Lancer un timer de 30 secondes
-    const timer = setTimeout(() => {
-      handleNext(
-        currentTrackIndex,
-        setCurrentTrackIndex,
-        blindtestReady,
-        deviceId,
-        accessToken
-      );
-    }, 30000);
+    // Lancer un timer de 30 secondes si la musique est en lecture
+    if (isPlaying) {
+      const timer = setTimeout(() => {
+        handleNext(
+          currentTrackIndex,
+          setCurrentTrackIndex,
+          blindtestReady,
+          deviceId,
+          accessToken
+        );
+      }, 35000);
 
-    // Nettoyer le timer si le composant est démonté ou si le track change
-    return () => clearTimeout(timer);
-  }, [currentTrackIndex, blindtestReady, deviceId, accessToken]);
+      // Nettoyer le timer si le composant est démonté ou si le track change
+      return () => clearTimeout(timer);
 
+    }
+  }, [currentTrackIndex, blindtestReady, deviceId, accessToken, !isPlaying]);
+
+
+
+  useEffect(() => {
+    if (isPlaying){
+    const timerTrackDetails = setTimeout(() => {
+      setShowTrackDetails(true);
+      setShowScoreAdder(true);
+    }, 20000);
+    const timerTrackDetailsHide = setTimeout(() => {
+      setShowTrackDetails(false);
+      setShowScoreAdder(false);
+    } , 14000);
+  return () => {
+    clearTimeout(timerTrackDetails);
+    clearTimeout(timerTrackDetailsHide);
+
+  };
+  };
+},);
+
+
+  if (!showBlindtest) {
+    return null;
+  }
 
   return (
+    <div className="gradient">
     <div className="blindtest">
-      <h1>The song was</h1>
+
 
       {!hasStarted ? (
-        <button onClick={handleStart}>Démarrer le Blind Test</button>
+        <button onClick={() => { handleStart(); handleIsPlaying(); }}>Start Blind Test</button>
       ) : (
         <div>
           {isInitialized ? (
-            <div>
-
-              {trackDetails ? (
-                  <div className="track-details ">
-                <p>
-                  <div className="cover">
-                  <img src={trackDetails.album.images[0].url} alt="Album cover" style={{ width: '100px', height: '100px' }} />
-                  </div>
-                  <div classsName="track-info">
-                  {trackDetails.name || "Inconnue"} - {" "}
-                  <br />
-                  {trackDetails.artists?.map(artist => artist.name).join(", ") || "Inconnus"}
-                  </div>
-                </p>
-                  </div>
+             <div>
+             {trackDetails ? (
+              !showTrackDetails ? (
+                null
               ) : (
-                <p>Chargement des détails de la piste...</p>
+               <div className="track-details">
+                <h1>The song was</h1>
+                 <div className="cover">
+                   <img src={trackDetails.album.images[0].url} alt="Album cover" style={{ width: '100px', height: '100px' }} />
+                 </div>
+                 <div className="track-info">
+                   <p>
+                     {trackDetails.name || "Inconnue"} - {" "}
+                     <br />
+                     {trackDetails.artists?.map(artist => artist.name).join(", ") || "Inconnus"}
+                   </p>
+                 </div>
+               </div>
+              )
+             ) : (
+                {handleNext}
               )}
             </div>
           ) : (
@@ -223,6 +265,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
           )}
         </div>
       )}
+    </div>
     </div>
   );
 }

@@ -1,25 +1,43 @@
 import { useState } from "react";
 
-export function AddPlayer({ players, setPlayers }) {
+export function AddPlayer({ players, setPlayers, showAddPlayer, setShowAddPlayer }) {
   const [newPlayer, setNewPlayer] = useState("");
 
+  const addPlayer = (player) => {
+    if (players.length < 9) {
+      setPlayers([...players, player]);
+    } else {
+      alert("Maximum 9 players allowed");
+    }
+  };
   const handleAddPlayer = () => {
     if (newPlayer.trim() !== "") {
-      setPlayers([...players, newPlayer]);
+      addPlayer(newPlayer);
       setNewPlayer(""); // Réinitialiser le champ de saisie après l'ajout
     }
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleAddPlayer();
+    }
+  };
+
+  if (!showAddPlayer) {
+    return null;
+  }
+
   return (
-    <div>
+    <div className="add-player">
       <h1>Add Player</h1>
       <input
         type="text"
         value={newPlayer}
         placeholder="Player name"
         onChange={(e) => setNewPlayer(e.target.value)}
+        onKeyPress={handleKeyPress}
       />
-      <button onClick={handleAddPlayer}>Add Player</button>
+      <button onClick={handleAddPlayer}>+</button>
       <ul>
         {players.map((player, index) => (
           <li key={index}>{player}</li>

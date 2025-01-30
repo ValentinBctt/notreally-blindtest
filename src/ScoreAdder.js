@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { handlePlay, handleNext } from './BlindTest';
 
-export function ScoreAdder({ players, scores, setScores, currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken }) {
+export function ScoreAdder({ players, scores, setScores, currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken, showScoreAdder, setShowScoreAdder }) {
 
   useEffect(() => {
     // Initialiser les scores à 0 pour chaque joueur si ce n'est pas déjà fait
@@ -29,11 +29,15 @@ export function ScoreAdder({ players, scores, setScores, currentTrackIndex, setC
     handleNext(currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken);
   };
 
+  if (!showScoreAdder) {
+    return null;
+  }
+
   return (
-    <div>
-      <h1>ScoreAdder</h1>
+    <div className="score-adder">
+      <h1>Who's got the point ?</h1>
       {players.map((player) => (
-        <button key={player} onClick={() => { handleScoreChange(player); handleNextTrack(); }}>
+        <button className="score" key={player} onClick={() => { handleScoreChange(player);  }}>
           {player} {scores[player] || 0}
         </button>
       ))}

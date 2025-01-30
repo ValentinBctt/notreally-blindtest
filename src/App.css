@@ -1,28 +1,242 @@
+@font-face {
+  font-family: 'ClashDisplay-Medium';
+  src: url('./assets/fonts/ClashDisplay-Medium.otf') format('truetype');
+}
+
+:root {
+  --linear: linear-gradient(to right bottom, #ffd620, #ffb058, #ffb058, #ff9595, #dd436d, #d43a3a);
+  --jaune: #FFD620;
+  --rouge: #D43A3A;
+  --bleu: #2E2D4D;
+}
+
 .App {
   text-align: center;
 }
 
 body {
-  background-color: #2E2D4D;
+  background-color: rgb(34, 34, 34);
   height: 100vh;
-
+  overflow: hidden;
+  margin: 3rem 1rem;
 }
 
 h1 {
-  color: white;
+  font-family: "ClashDisplay-Medium";
+  background: var(--linear);
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 p {
+  font-family: "ClashDisplay-Medium";
   color: white;
 }
+
 li {
+  font-family: "ClashDisplay-Medium";
   color: white;
   list-style-type: none;
 }
 
-.blindtest {
+input {
+  border-radius: 20px;
+  padding: 0.5rem;
+  margin: 0.5rem;
+  border: solid 3px var(--jaune);
+  transition: ease 0.2s;
+}
+
+input:focus {
+  outline: none;
+  box-shadow: 3px 4px 0px 0px var(--jaune);
+}
+
+button {
+  font-family: "ClashDisplay-Medium";
+  border-radius: 20px;
+  padding: 0.5rem;
+  margin: 0.5rem;
+  border: none;
+  transition: ease 0.2s;
+  background: var(--linear);
+  -webkit-background-clip: text;
+  color: transparent;
+  border: solid 1px var(--jaune);
+  padding: 0.7rem;
+}
+
+.add-player button {
+  font-size: 2rem;
+  border: none;
+  padding: 0;
+}
+
+.track-details {
   background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  border-radius: 50px;
   backdrop-filter: blur(40px);
-  padding: 2rem;
+  padding: 0.5rem;
+  box-shadow:
+    0 -3px 5px 0px #FFD620,
+    0 3px 5px 0px #D43A3A,
+    0 1px 5px 0px #FFD100;
+}
+
+.score-adder {
+  grid-template-columns: 3;
+}
+
+button.score {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border: none;
+  border-radius: 15px;
+  color: white;
+  backdrop-filter: blur(40px);
+  padding: 0.5rem;
+  height: 6rem;
+  width: 6rem;
+  box-shadow:
+    0 -2px 5px 0px #FFD620,
+    0 2px 5px 0px #D43A3A,
+    0 1px 5px 0px #FFD100;
+}
+
+html, body {
+  overflow: hidden;
+}
+
+
+.logo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  width: 35vmin;
+  height: 35vmin;
+  border-radius: 50%;
+  background: #5bc1ff;
+  animation: circle 1.5s linear infinite, ripple 0.9s linear infinite;
+  z-index: -1;
+}
+
+.logo .reverse {
+  top: -1.5vmin;
+  left: 9.6vmin;
+  transform: rotate(-135deg);
+  z-index: -1;
+}
+
+.outer-circle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  width: 90vmin;
+  height: 90vmin;
+  background: transparent;
+  border-radius: 50%;
+  animation: outer-circle 1.5s linear infinite;
+  z-index: -1;
+}
+
+.outer-circle-2 {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  width: 90vmin;
+  height: 90vmin;
+  background: transparent;
+  border-radius: 50%;
+  animation: outer-circle-2 1.5s linear infinite;
+  z-index: -1;
+}
+
+@keyframes circle {
+  50% {
+    transform: scale(1.1);
+  }
+  75% {
+    transform: scale(1.0);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes outer-circle {
+  0% {
+    border-color: transparent;
+  }
+  25% {
+    border-color: transparent;
+  }
+  75% {
+    transform: scale(1.2);
+    border: 1vmin solid #36c1fa;
+  }
+  100% {
+    transform: scale(1.7);
+    border: 1vmin solid #36c1fa;
+    border-color: transparent;
+  }
+}
+
+@keyframes outer-circle-2 {
+  0% {
+    transform: scale(1.3);
+    border: 1vmin solid #36c1fa;
+  }
+  50% {
+    transform: scale(1.7);
+    border-color: transparent;
+  }
+  75% {
+    border-color: transparent;
+  }
+  100% {
+    border-color: transparent;
+  }
+}
+
+@keyframes ripple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(91, 193, 255, 0.3),
+                0 0 0 0vmin rgba(91, 193, 255, 0.3),
+                0 0 0 0vmin rgba(91, 193, 255, 0.3),
+                0 0 0 20vmin rgba(91, 193, 255, 0.3);
+  }
+  25% {
+    box-shadow: 0 0 0 0 rgba(91, 193, 255, 0.3),
+                0 0 0 0vmin rgba(91, 193, 255, 0.3),
+                0 0 0 15vmin rgba(91, 193, 255, 0.3),
+                0 0 0 20vmin rgba(91, 193, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 0 rgba(91, 193, 255, 0.3),
+                0 0 0 10vmin rgba(91, 193, 255, 0.3),
+                0 0 0 15vmin rgba(91, 193, 255, 0.3),
+                0 0 0 20vmin rgba(91, 193, 255, 0.3);
+  }
+  75% {
+    box-shadow: 0 0 0 4vmin rgba(91, 193, 255, 0.3),
+                0 0 0 10vmin rgba(91, 193, 255, 0.3),
+                0 0 0 15vmin rgba(91, 193, 255, 0.3),
+                0 0 0 20vmin rgba(91, 193, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 0vmin rgba(91, 193, 255, 0.3),
+                0 0 0 0vmin rgba(91, 193, 255, 0.3),
+                0 0 0 0vmin rgba(91, 193, 255, 0.3),
+                0 0 0 0vmin rgba(91, 193, 255, 0);
+  }
 }

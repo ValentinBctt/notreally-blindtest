@@ -1,10 +1,9 @@
 import { useState } from "react";
 
-export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNames, setPlaylistsNames, playlistOwner, setPlaylistOwner }) {
+export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNames, setPlaylistsNames, playlistOwner,
+  setPlaylistOwner, showPlaylistPicker, setShowPlaylistPicker, setShowBlindtest, setShowScoreAdder, setShowAddPlayer,  }) {
   let accessToken = null;
   let tokenExpiryTime = null;
-
-
 
   // Fonction pour récupérer le jeton d'accès
   const fetchAccessToken = async () => {
@@ -48,19 +47,30 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
       return [];
     }
 
-    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    let allTracks = [];
+    let offset = 0;
+    let limit = 100;
+    let total = 0;
 
-    if (!response.ok) {
-      console.error('Failed to fetch playlist tracks:', response.statusText);
-      return [];
-    }
+    do {
+      const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?offset=${offset}&limit=${limit}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const data = await response.json();
-    return data.items;
+      if (!response.ok) {
+        console.error('Failed to fetch playlist tracks:', response.statusText);
+        return [];
+      }
+
+      const data = await response.json();
+      allTracks = allTracks.concat(data.items);
+      offset += limit;
+      total = data.total;
+    } while (offset < total);
+
+    return allTracks;
   };
 
   // Fonction pour récupérer le nom de la playlist
@@ -155,6 +165,9 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
     setTracks((prevTracks) => [...prevTracks, ...fetchedTracks]);
     setBlindtest((prevBlindtest) => [...prevBlindtest, ...fetchedBlindtest]);
     console.log('Fetched blindtest:', fetchedBlindtest);
+
+    // Clear the input field
+    setPlaylistLink("");
   };
 
   // Fonction pour mélanger la playlist
@@ -170,14 +183,30 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
     const shuffledBlindtest = shuffleArray(blindtest);
     setBlindtestReady(shuffledBlindtest);
     console.log('Shuffled blindtest:', shuffledBlindtest);
+
+    setShowPlaylistPicker(false);
+    setShowAddPlayer(false);
+    setShowBlindtest(true);
+
+
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleButtonClick();
+    }
+  };
+
+  if (!showPlaylistPicker) {
+    return null;
+  }
+
   return (
-    <div>
+    <div className="playlist-link">
       <h1>Playlist link</h1>
-      <input type="text" value={playlistLink} onChange={handleAddPlaylist} placeholder="Playlist link" />
+      <input type="text" value={playlistLink} onChange={handleAddPlaylist} placeholder="Playlist link" onKeyPress={handleKeyPress}/>
+      <button onClick={handleButtonClick}>Add Playlist</button>
       <div className="list-playlist">
-        <button onClick={handleButtonClick}>Fetch Playlist Tracks</button>
         <ul>
           {playlistsNames && playlistsNames.map((name, index) => (
             <li key={index}>{name} - {playlistOwner[index]}</li>
