@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { handlePlay, handleNext } from './BlindTest';
+import { useRef } from 'react';
+import { handlePlay, handleNext} from './BlindTest';
 
 export function ScoreAdder({ players, scores, setScores, currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken, showScoreAdder, setShowScoreAdder }) {
 
@@ -14,20 +15,23 @@ export function ScoreAdder({ players, scores, setScores, currentTrackIndex, setC
     setScores(prevScores => ({ ...prevScores, ...initialScores }));
   }, [players, setScores]);
 
+  const lastClickedRef = useRef({});
+
   const handleScoreChange = (player) => {
-    setScores((prevScores) => ({
-      ...prevScores,
-      [player]: (prevScores[player] || 0) + 1,
-    }));
+    const now = Date.now();
+    if (!lastClickedRef.current[player] || now - lastClickedRef.current[player] > 25000) {
+      setScores((prevScores) => ({
+        ...prevScores,
+        [player]: (prevScores[player] || 0) + 1,
+      }));
+      lastClickedRef.current[player] = now;
+    } else {
+      console.log('Trop rapide !');
+    }
   };
 
-  const handleNextTrack = () => {
-    if (!deviceId) {
-      console.error("Le lecteur n'est pas encore prêt.");
-      return;
-    }
-    handleNext(currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken);
-  };
+
+
 
   if (!showScoreAdder) {
     return null;

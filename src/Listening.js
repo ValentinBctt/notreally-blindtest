@@ -6,10 +6,9 @@ export function Listening( { showListening, setShowListening }) {
   return (
 
     <>
-  
+
       <div class="logo">
-        <div class="c-shape"></div>
-        <div class="c-shape reverse"></div>
+        <img src="assets/Disco.svg" alt="Disco" />
       </div>
       <div class="outer-circle"></div>
       <div class="outer-circle-2"></div>

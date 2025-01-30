@@ -70,7 +70,7 @@ function App() {
                   setShowScoreAdder={setShowScoreAdder}
                   setShowListening={setShowListening}
 
-                  
+
                   blindtestReady={blindtestReady}
                   currentTrackIndex={currentTrackIndex}
                   setCurrentTrackIndex={setCurrentTrackIndex}

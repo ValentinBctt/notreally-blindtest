@@ -200,27 +200,27 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
       return () => clearTimeout(timer);
 
     }
-  }, [currentTrackIndex, blindtestReady, deviceId, accessToken, !isPlaying]);
-
+  }, [currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken, isPlaying]);
 
 
   useEffect(() => {
-    if (isPlaying){
-    const timerTrackDetails = setTimeout(() => {
-      setShowTrackDetails(true);
-      setShowScoreAdder(true);
-    }, 20000);
-    const timerTrackDetailsHide = setTimeout(() => {
-      setShowTrackDetails(false);
-      setShowScoreAdder(false);
-    } , 14000);
-  return () => {
-    clearTimeout(timerTrackDetails);
-    clearTimeout(timerTrackDetailsHide);
+    if (isPlaying) {
+      const timerTrackDetails = setTimeout(() => {
+        setShowTrackDetails(true);
+        setShowScoreAdder(true);
+      }, 20000);
 
-  };
-  };
-},);
+      const timerTrackDetailsHide = setTimeout(() => {
+        setShowTrackDetails(false);
+        setShowScoreAdder(false);
+      }, 35000); // 20000 + 14000
+
+      return () => {
+        clearTimeout(timerTrackDetails);
+        clearTimeout(timerTrackDetailsHide);
+      };
+    }
+  }, [isPlaying, currentTrackIndex, setShowTrackDetails, setShowScoreAdder]);
 
 
   if (!showBlindtest) {
