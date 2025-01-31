@@ -7,13 +7,14 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AddPlayer } from "./AddPlayer";
 import { ScoreAdder } from "./ScoreAdder";
 import { Listening } from "./Listening";
+import { LeaderBoard } from "./LeaderBoard";
 
 function App() {
   const [playlistsNames, setPlaylistsNames] = useState([]);
   const [playlistOwner, setPlaylistOwner] = useState([]);
   const [blindtestReady, setBlindtestReady] = useState([]); // État pour le blindtest
   const [players, setPlayers] = useState([]); // État pour les joueurs
-
+  const [counterSongs, setCounterSongs] = useState(1); // État pour le compteur de chansons
   // Function to add a player with a limit of 9 players
 
   const [scores, setScores] = useState(
@@ -29,6 +30,7 @@ function App() {
   const [showScoreAdder, setShowScoreAdder] = useState(false);
   const [showBlindtest, setShowBlindtest] = useState(false);
   const [showListening, setShowListening] = useState(false);
+  const [showLeaderBoard, setShowLeaderBoard] = useState(false);
 
   return (
     <Router>
@@ -56,7 +58,6 @@ function App() {
                   setShowScoreAdder={setShowScoreAdder}
                   setShowBlindtest={setShowBlindtest}
                   setShowListening={setShowListening}
-
                   setBlindtestReady={setBlindtestReady}
                   playlistsNames={playlistsNames}
                   setPlaylistsNames={setPlaylistsNames}
@@ -69,8 +70,7 @@ function App() {
                   setShowBlindtest={setShowBlindtest}
                   setShowScoreAdder={setShowScoreAdder}
                   setShowListening={setShowListening}
-
-
+                  setShowLeaderBoard={setShowLeaderBoard}
                   blindtestReady={blindtestReady}
                   currentTrackIndex={currentTrackIndex}
                   setCurrentTrackIndex={setCurrentTrackIndex}
@@ -78,6 +78,8 @@ function App() {
                   setPlaylistsNames={setPlaylistsNames}
                   playlistOwner={playlistOwner}
                   setPlaylistOwner={setPlaylistOwner}
+                  counterSongs={counterSongs}
+                  setCounterSongs={setCounterSongs}
                 />
                 <ScoreAdder
                   showScoreAdder={showScoreAdder}
@@ -89,7 +91,17 @@ function App() {
                   scores={scores}
                   setScores={setScores}
                 />
-                <Listening showListening={showListening} setShowListening={setShowListening}/>
+                <Listening
+                  showListening={showListening}
+                  setShowListening={setShowListening}
+                />
+                <LeaderBoard
+                players={players}
+                scores={scores}
+                showLeaderBoard={showLeaderBoard}
+                setShowLeaderBoard={setShowLeaderBoard}
+                counterSongs={counterSongs}/>
+
               </>
             }
           />

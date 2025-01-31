@@ -14,8 +14,12 @@ export function AddPlayer({ players, setPlayers, showAddPlayer, setShowAddPlayer
   const handleAddPlayer = () => {
     if (newPlayer.trim() !== "") {
       if (newPlayer.length <= 9) {
-        addPlayer(newPlayer);
-        setNewPlayer(""); // Réinitialiser le champ de saisie après l'ajout
+        if (!players.includes(newPlayer)) {
+          addPlayer(newPlayer);
+          setNewPlayer(""); // Réinitialiser le champ de saisie après l'ajout
+        } else {
+          alert("Player name already exists");
+        }
       } else {
         alert("Player name cannot exceed 9 letters");
       }

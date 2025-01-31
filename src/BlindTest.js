@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
+import { LeaderBoard } from "./LeaderBoard";
 
 export const handlePlay = async ({ deviceId, blindtestReady, currentTrackIndex, accessToken }) => {
   if (!deviceId) {
@@ -33,7 +34,8 @@ export const handlePlay = async ({ deviceId, blindtestReady, currentTrackIndex, 
   }
 };
 
-export const handleNext = (currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken) => {
+
+export const handleNext = (currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken, counterSongs, setCounterSongs) => {
   if (!blindtestReady || !Array.isArray(blindtestReady)) {
     console.error("blindtestReady n'est pas défini ou n'est pas un tableau.");
     return;
@@ -42,6 +44,7 @@ export const handleNext = (currentTrackIndex, setCurrentTrackIndex, blindtestRea
   const nextIndex = (currentTrackIndex + 1) % blindtestReady.length;
   setCurrentTrackIndex(nextIndex);
   handlePlay({ deviceId, blindtestReady, currentTrackIndex: nextIndex, accessToken });
+
 };
 
 const getTrackDetails = async (trackId, accessToken) => {
@@ -60,6 +63,8 @@ const getTrackDetails = async (trackId, accessToken) => {
     console.error("Erreur lors de la récupération des détails de la piste :", error);
     return null;
   }
+
+
 };
 
 const refreshAccessToken = async (refreshToken) => {
@@ -86,7 +91,7 @@ const refreshAccessToken = async (refreshToken) => {
 };
 
 export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIndex, playlistsNames,
-  setPlaylistsNames, playlistOwner, setPlaylistOwner, showBlindtest, setShowScoreAdder, setShowListening }) {
+  setPlaylistsNames, playlistOwner, setPlaylistOwner, showBlindtest, setShowScoreAdder, setShowListening, setCounterSongs, counterSongs, setShowLeaderBoard }) {
   const [hasStarted, setHasStarted] = useState(false);
   const [player, setPlayer] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -98,6 +103,9 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
   const navigate = useNavigate();
   const [showTrackDetails, setShowTrackDetails] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const handleCounterSongs = (counterSongs, setCounterSongs) => {
+    setCounterSongs(counterSongs + 1);
+  }
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -223,6 +231,19 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
 
   useEffect(() => {
     // Lancer un timer de 30 secondes si la musique est en lecture
+    if (counterSongs === 5 && isPlaying) {
+      const timerLeaderBoard = setTimeout(() => {
+        handleNext(
+          currentTrackIndex,
+          setCurrentTrackIndex,
+          blindtestReady,
+          deviceId,
+          accessToken
+        );
+      }, 42000);
+      return () => clearTimeout(timerLeaderBoard);
+    }
+
     if (isPlaying) {
       const timer = setTimeout(() => {
         handleNext(
@@ -232,6 +253,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
           deviceId,
           accessToken
         );
+        handleCounterSongs(counterSongs, setCounterSongs);
       }, 35000);
 
       // Nettoyer le timer si le composant est démonté ou si le track change
@@ -241,6 +263,37 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
   }, [currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken, isPlaying]);
 
   useEffect(() => {
+
+    if (counterSongs === 5 && isPlaying) {
+      if (isPlaying) {
+        const timerTrackDetails = setTimeout(() => {
+          setShowTrackDetails(true);
+          setShowScoreAdder(true);
+        }, 20000);
+
+        const timerTrackDetailsHide = setTimeout(() => {
+          setShowTrackDetails(false);
+          setShowScoreAdder(false);
+        }, 35000); // 20000 + 14000
+
+        const timerLeaderBoard = setTimeout(() => {
+          setShowLeaderBoard(true);
+        }, 35000);
+
+        const timerLeaderBoardHide = setTimeout(() => {
+          setShowLeaderBoard(false);
+        }, 42000); // 35000 + 15000
+
+        return () => {
+          clearTimeout(timerTrackDetails);
+          clearTimeout(timerTrackDetailsHide);
+          clearTimeout(timerLeaderBoard);
+          clearTimeout(timerLeaderBoardHide);
+        };
+      }
+      setCounterSongs(0);
+  }
+
     if (isPlaying) {
       const timerTrackDetails = setTimeout(() => {
         setShowTrackDetails(true);
@@ -257,7 +310,9 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
         clearTimeout(timerTrackDetailsHide);
       };
     }
-  }, [isPlaying, currentTrackIndex, setShowTrackDetails, setShowScoreAdder]);
+  }, [isPlaying, currentTrackIndex, setShowTrackDetails, setShowScoreAdder, counterSongs, setCounterSongs, setIsPlaying]);
+
+
 
   if (!showBlindtest) {
     return null;

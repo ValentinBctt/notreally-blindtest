@@ -41,6 +41,10 @@ li {
   list-style-type: none;
 }
 
+ul {
+  padding: 0;
+}
+
 input {
   border-radius: 20px;
   padding: 0.5rem;
@@ -82,7 +86,7 @@ button.merge {
 }
 
 .add-player {
-  margin-top: 10rem;
+
 }
 
 .add-player button {
@@ -144,6 +148,39 @@ button.score {
       transform: scale(0.9);
     }
 }
+
+.leaderboard {
+
+  background-color: rgba(0, 0, 0, 0.4);
+  margin: 3rem 2rem;
+  border-radius: 30px;
+  backdrop-filter: blur(5px);
+  padding: 0.5rem;
+  box-shadow:
+    0 -3px 5px 0px #FFD620,
+    0 3px 5px 0px #D43A3A,
+    0 1px 5px 0px #FFD100;
+    padding: 1rem 2rem 1rem 2rem;
+}
+
+.player {
+  display: flex;
+  font-size: 2rem;
+  color: white;
+  font-family: "ClashDisplay-Medium";
+  justify-content: space-between;
+  width: 100%;
+}
+
+.player-name {
+  text-align: left;
+}
+
+.player-score {
+  text-align: right;
+}
+
+
 
 
 
