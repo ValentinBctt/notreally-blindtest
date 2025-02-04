@@ -290,9 +290,10 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
           clearTimeout(timerTrackDetailsHide);
           clearTimeout(timerLeaderBoard);
           clearTimeout(timerLeaderBoardHide);
+          setCounterSongs(0);
+          handleNext()
         };
       }
-      setCounterSongs(0);
   }
 
     if (isPlaying) {
@@ -340,13 +341,19 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
                         <img src={trackDetails.album.images[0].url} alt="Album cover" style={{ width: '150px', height: '150px', margin: '1rem', borderRadius: '10px' }} />
                       </div>
                       <div className="track-info">
-                        <p>
-                          {trackDetails.name || "Inconnue"} - {" "}
-                          <br />
-                          {trackDetails.artists?.map(artist => artist.name).join(", ") || "Inconnus"}
-                        </p>
+                        <div className={trackDetails.name.length > 20 ? "marquee" : ""}>
+                          <p>
+                            {trackDetails.name || "Inconnue"}{" "} - {" "}
+                          </p>
+                        </div>
+                          <div className={trackDetails.artists.map(artist => artist.name).join(", ").length > 20 ? "marquee" : ""}>
+                          <p>
+                            {trackDetails.artists?.map(artist => artist.name).join(", ") || "Inconnus"}
+                          </p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+
                   )
                 ) : (
                   { handleNext }

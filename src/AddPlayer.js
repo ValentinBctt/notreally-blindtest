@@ -4,16 +4,16 @@ export function AddPlayer({ players, setPlayers, showAddPlayer, setShowAddPlayer
   const [newPlayer, setNewPlayer] = useState("");
 
   const addPlayer = (player) => {
-    if (players.length < 9) {
+    if (players.length < 6) {
       setPlayers([...players, player]);
     } else {
-      alert("Maximum 9 players allowed");
+      alert("Maximum 6 players allowed");
     }
   };
 
   const handleAddPlayer = () => {
     if (newPlayer.trim() !== "") {
-      if (newPlayer.length <= 9) {
+      if (newPlayer.length <= 8) {
         if (!players.includes(newPlayer)) {
           addPlayer(newPlayer);
           setNewPlayer(""); // Réinitialiser le champ de saisie après l'ajout
@@ -21,7 +21,7 @@ export function AddPlayer({ players, setPlayers, showAddPlayer, setShowAddPlayer
           alert("Player name already exists");
         }
       } else {
-        alert("Player name cannot exceed 9 letters");
+        alert("Player name cannot exceed 8 letters");
       }
     }
   };
@@ -49,7 +49,7 @@ export function AddPlayer({ players, setPlayers, showAddPlayer, setShowAddPlayer
       <button onClick={handleAddPlayer}>+</button>
       <ul>
         {players.map((player, index) => (
-          <li key={index}>{player}</li>
+          <li key={index}>{player} ,</li>
         ))}
       </ul>
     </div>

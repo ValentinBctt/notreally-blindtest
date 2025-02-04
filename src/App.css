@@ -24,7 +24,7 @@ body {
 
 h1 {
   font-family: "ClashDisplay-Medium";
-  font-size: 2rem;
+  font-size: 1.8rem;
 
   -webkit-background-clip: text;
   color: white;
@@ -36,16 +36,23 @@ p {
   color: white;
   font-size: 1.5rem;
   margin-top: 0;
+  margin-bottom: 0.5rem;
 }
 
 li {
   font-family: "ClashDisplay-Medium";
   color: white;
   list-style-type: none;
+
 }
 
 ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
   padding: 0;
+  margin: 0 3rem;
 }
 
 input {
@@ -101,6 +108,10 @@ button.merge {
   padding: 0;
 }
 
+.add-player li {
+  margin-right: 1rem;
+}
+
 button.start {
   font-size: 2rem;
   display: flex;
@@ -118,8 +129,8 @@ button.start {
 
 .track-details {
   background-color: rgba(0, 0, 0, 0.4);
-  margin: 2rem 2rem 1rem 2rem;
-  border-radius: 50px;
+  margin: 0.5rem 1rem 0.5rem 1rem;
+  border-radius: 30px;
   backdrop-filter: blur(5px);
   padding: 0.5rem;
   box-shadow:
@@ -129,10 +140,40 @@ button.start {
     z-index: 100;
 }
 
+.track-info {
+  margin-bottom: 1rem;
+}
+
+.marquee {
+  width: 80%;
+  overflow: hidden;
+  white-space: nowrap;
+  box-sizing: border-box;
+  margin: 0 3rem 0 2rem;
+}
+
+.marquee p {
+  display: inline-block;
+  padding-left: 100%;
+  animation: marquee 15s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-100%, 0);
+  }
+}
+
+.score-adder h1 {
+  margin-bottom: 0.5rem;
+}
 
 .score-adder {
   background-color: rgba(0, 0, 0, 0.4);
-border-radius: 50px;
+border-radius: 30px;
   backdrop-filter: blur(5px);
  padding: 0.5rem;
   display: flex;
@@ -148,15 +189,15 @@ border-radius: 50px;
 
 button.score {
   font-size: 1.2rem;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease 0s;
   border: none;
   border-radius: 15px;
   color: white;
   backdrop-filter: blur(40px);
   padding: 0.5rem;
-  height: 7rem;
-  width: 7rem;
+  height: 6rem;
+  width: 6rem;
   box-shadow:
     0 -2px 5px 0px #FFD620,
     0 2px 5px 0px #D43A3A,
@@ -183,14 +224,22 @@ button.score {
     z-index: 100;
 }
 
+
 .player {
   display: flex;
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: white;
   font-family: "ClashDisplay-Medium";
   justify-content: space-between;
   width: 100%;
 }
+
+ol {
+  padding: 0;
+  margin: 0;
+}
+
+
 
 .player-name {
   text-align: left;
@@ -198,6 +247,10 @@ button.score {
 
 .player-score {
   text-align: right;
+}
+
+.player-rank {
+  text-align: left;
 }
 
 
