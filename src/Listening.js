@@ -1,4 +1,6 @@
-export function Listening( { showListening, setShowListening }) {
+import { BlindtestCountdown } from "./BlindtestCountdown";
+
+export function Listening( { showListening, setShowListening, currentTrackIndex }) {
   if (!showListening) {
     return null;}
 
@@ -15,6 +17,8 @@ export function Listening( { showListening, setShowListening }) {
       <div class="outer-circle"></div>
       <div class="outer-circle-2"></div>
       </div>
+
+      <BlindtestCountdown currentTrackIndex={currentTrackIndex}/>
     </>
   );
 }

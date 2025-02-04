@@ -39,14 +39,15 @@ export function ScoreAdder({ players, scores, setScores, currentTrackIndex, setC
 
   return (
     <div className="score-adder">
-      <h1>Who's got the point ?</h1>
-
+      <h1>Who guess first ?</h1>
+      <div className="all-players-score">
       {players.map((player) => (
         <button className="score" key={player} onClick={() => { handleScoreChange(player);  }}>
           {player}
 
         </button>
       ))}
+      </div>
     </div>
   );
 }

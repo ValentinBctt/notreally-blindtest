@@ -131,6 +131,11 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
 
   // Fonction pour récupérer les informations de la playlist
   const handleButtonClick = async () => {
+    if (!playlistLink) {
+      console.error('Playlist link is empty');
+      return;
+    }
+
     setIsLoading(true); // Début du chargement
     const playlistId = playlistLink.split('/').pop().split('?')[0];
 
@@ -142,7 +147,7 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
       return;
     }
 
-    setPlaylistsNames((prevNames) => [...prevNames, fetchedName]);
+    setPlaylistsNames((prevNames) => [fetchedName, ...prevNames]);
 
     // Fetch playlist owner
     const fetchedOwner = await fetchPlaylistOwner(playlistId);
@@ -152,7 +157,7 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
       return;
     }
 
-    setPlaylistOwner((prevNames) => [...prevNames, fetchedOwner]);
+    setPlaylistOwner((prevNames) => [fetchedOwner, ...prevNames]);
 
     // Fetch playlist tracks
     const fetchedTracks = await fetchPlaylistTracks(playlistId);
@@ -168,23 +173,30 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
 
     setTracks((prevTracks) => [...prevTracks, ...fetchedTracks]);
     setBlindtest((prevBlindtest) => [...prevBlindtest, ...fetchedBlindtest]);
-    console.log('Fetched blindtest:', fetchedBlindtest);
+    const blindtestEntry = {
+      owner: fetchedOwner,
+      tracks: fetchedBlindtest
+    };
+
+    setBlindtest((prevBlindtest) => [...prevBlindtest, blindtestEntry]);
+    console.log('Fetched blindtest:', blindtestEntry);
 
     // Clear the input field
     setPlaylistLink("");
     setIsLoading(false); // Fin du chargement
   };
 
-  // Fonction pour mélanger la playlist
-  const handleMergePlaylist = () => {
-    function shuffleArray(array) {
-      const shuffledArray = [...array]; // Crée une copie pour ne pas modifier l'original
-      for (let i = shuffledArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1)); // Génère un index aléatoire
-        [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]]; // Échange les éléments
-      }
-      return shuffledArray;
+  function shuffleArray(array) {
+    const shuffledArray = [...array]; // Crée une copie pour ne pas modifier l'original
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1)); // Génère un index aléatoire
+      [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]]; // Échange les éléments
     }
+    return shuffledArray;
+  }
+  // Fonction pour mélanger la playlist
+  /* const handleMergePlaylist = () => {
+
     const shuffledBlindtest = shuffleArray(blindtest);
     setBlindtestReady(shuffledBlindtest);
     console.log('Shuffled blindtest:', shuffledBlindtest);
@@ -192,7 +204,60 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
     setShowPlaylistPicker(false);
     setShowAddPlayer(false);
     setShowBlindtest(true);
+  }; */
+
+  const handleMergeEasyPlaylist = () => {
+    const mergedBlindtest = [];
+    const uniqueTracks = new Set();
+    const maxTracks = 50;
+    let trackCount = 0;
+    let attempts = 0;
+    const maxAttempts = 1000; // Sécurité pour éviter une boucle infinie
+
+    while (trackCount < maxTracks && attempts < maxAttempts) {
+      for (const entry of blindtest) {
+        if (trackCount >= maxTracks) break;
+        if (!entry.tracks || entry.tracks.length === 0) continue;
+
+        let foundNewTrack = false;
+        let localAttempts = 0; // Pour éviter une boucle infinie dans une seule playlist
+
+        while (!foundNewTrack && localAttempts < entry.tracks.length) {
+          const randomTrackIndex = Math.floor(Math.random() * entry.tracks.length);
+          const track = entry.tracks[randomTrackIndex];
+
+          if (!track || !track.url) {
+            localAttempts++;
+            continue;
+          }
+
+          if (!uniqueTracks.has(track.url)) {
+            // Ajouter le track et le marquer comme trouvé
+            mergedBlindtest.push({ owner: entry.owner, track: track.url });
+            uniqueTracks.add(track.url);
+            trackCount++;
+            foundNewTrack = true;
+          }
+
+          localAttempts++;
+        }
+      }
+      attempts++;
+    }
+
+    const shuffledBlindtest = shuffleArray(mergedBlindtest);
+
+    setBlindtestReady(shuffledBlindtest);
+    console.log("Merged blindtest:", shuffledBlindtest);
+
+    setShowPlaylistPicker(false);
+    setShowAddPlayer(false);
+    setShowBlindtest(true);
   };
+
+
+
+
 
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
@@ -203,21 +268,24 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
   if (!showPlaylistPicker) {
     return null;
   }
-  
 
   return (
     <div className="playlist-link">
       <h1>Playlist link</h1>
-      <input type="text" value={playlistLink} onChange={handleAddPlaylist} placeholder="Playlist link" onKeyPress={handleKeyPress}/>
+      <input type="text" value={playlistLink} onChange={handleAddPlaylist} placeholder="Playlist link" onKeyPress={handleKeyPress} />
       <button onClick={handleButtonClick}>Add Playlist</button>
       <div className="list-playlist">
         <ul>
-          {playlistsNames && playlistsNames.map((name, index) => (
+          {playlistsNames && playlistsNames.slice(0, 6).map((name, index) => (
             <li key={index}>{name} - {playlistOwner[index]}</li>
           ))}
+
+          {playlistsNames.length > 6 && (
+            <li>... and {playlistsNames.length - 6} others</li>
+          )}
         </ul>
       </div>
-      <button className="merge" onClick={handleMergePlaylist} disabled={isLoading}>
+      <button className="merge" onClick={handleMergeEasyPlaylist} disabled={isLoading}>
         {isLoading ? `Adding songs` : "Merge Playlist"}
       </button>
     </div>

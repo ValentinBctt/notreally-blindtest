@@ -24,17 +24,28 @@ body {
 
 h1 {
   font-family: "ClashDisplay-Medium";
-  font-size: 1.8rem;
+  font-size: 1.5rem;
 
   -webkit-background-clip: text;
   color: white;
-  margin: 1rem 0 0 0;
+  margin: 0.5rem 0 0 0;
+}
+
+h2 {
+  font-family: "ClashDisplay-Medium";
+  font-size: 0.8rem;
+  color: white;
+  margin: 0.5rem 0 0 0;
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: -1;
 }
 
 p {
   font-family: "ClashDisplay-Medium";
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   margin-top: 0;
   margin-bottom: 0.5rem;
 }
@@ -112,16 +123,25 @@ button.merge {
   margin-right: 1rem;
 }
 
+.list-playlist li {
+  margin-right: 1rem;
+}
+
+.list-playlist{
+  margin-top: 1rem;
+}
+
 button.start {
   font-size: 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
   position: absolute;
-  width: 70%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  width: 80%;
+  margin: auto;
   &:active {
     transform: translate(-50%, -50%) scale(0.9);
   }
@@ -129,7 +149,7 @@ button.start {
 
 .track-details {
   background-color: rgba(0, 0, 0, 0.4);
-  margin: 0.5rem 1rem 0.5rem 1rem;
+  margin: 2rem 1rem 0.5rem 1rem;
   border-radius: 30px;
   backdrop-filter: blur(5px);
   padding: 0.5rem;
@@ -172,6 +192,7 @@ button.start {
 }
 
 .score-adder {
+  margin-top: 1.5rem;
   background-color: rgba(0, 0, 0, 0.4);
 border-radius: 30px;
   backdrop-filter: blur(5px);
@@ -209,19 +230,23 @@ button.score {
 }
 
 .leaderboard {
+  position: absolute;
+  width: 70%;
   display: flex;
   flex-direction: column;
   background-color: rgba(0, 0, 0, 0.4);
-  margin: 5rem 2rem;
   border-radius: 30px;
   backdrop-filter: blur(5px);
-  padding: 0.5rem;
+  padding: 2rem 0.5rem;
   box-shadow:
     0 -3px 5px 0px #FFD620,
     0 3px 5px 0px #D43A3A,
     0 1px 5px 0px #FFD100;
-    padding: 1rem 2rem 1rem 2rem;
-    z-index: 100;
+  padding: 1rem 2rem 1rem 2rem;
+  z-index: 100;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 
@@ -237,6 +262,12 @@ button.score {
 ol {
   padding: 0;
   margin: 0;
+  font-size: 2rem;
+}
+
+.leaderboard li {
+  font-size: 2rem;
+  margin-top: 1rem;
 }
 
 

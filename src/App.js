@@ -9,6 +9,7 @@ import { ScoreAdder } from "./ScoreAdder";
 import { Listening } from "./Listening";
 import { LeaderBoard } from "./LeaderBoard";
 import { PlaylistConverter } from "./PlaylistConverter";
+import { BlindtestCountdown } from "./BlindtestCountdown";
 
 function App() {
   const [playlistsNames, setPlaylistsNames] = useState([]);
@@ -42,9 +43,8 @@ function App() {
           <Route
             path="/"
             element={
-
               <>
-              <Logo showLogo={showLogo} />
+                <Logo showLogo={showLogo} />
                 <AddPlayer
                   showAddPlayer={showAddPlayer}
                   setShowAddPlayer={setShowAddPlayer}
@@ -68,7 +68,6 @@ function App() {
                   playlistOwner={playlistOwner}
                   setPlaylistOwner={setPlaylistOwner}
                 />
-
 
                 {/* Passer blindtestReady comme prop */}
                 <BlindTest
@@ -101,6 +100,7 @@ function App() {
                 <Listening
                   showListening={showListening}
                   setShowListening={setShowListening}
+                  currentTrackIndex={currentTrackIndex}
                 />
                 <LeaderBoard
                   players={players}
@@ -109,6 +109,7 @@ function App() {
                   setShowLeaderBoard={setShowLeaderBoard}
                   counterSongs={counterSongs}
                 />
+
               </>
             }
           />
@@ -120,13 +121,16 @@ function App() {
 
 export default App;
 
-function Logo( {showLogo} ) {
-
+function Logo({ showLogo }) {
   if (!showLogo) {
     return null;
   }
 
   return (
-    <img src="assets/Shook Ones Logo.svg" alt="Shook Ones Logo" className="SO-logo" />
-  )
+    <img
+      src="assets/Shook Ones Logo.svg"
+      alt="Shook Ones Logo"
+      className="SO-logo"
+    />
+  );
 }

@@ -9,12 +9,12 @@ export const handlePlay = async ({ deviceId, blindtestReady, currentTrackIndex, 
   }
 
   const track = blindtestReady[currentTrackIndex];
-  if (!track) {
+  if (!track || !track.track) {
     console.error("La piste n'est pas disponible.");
     return;
   }
 
-  const trackUri = track.url.replace(
+  const trackUri = track.track.replace(
     "https://open.spotify.com/track/",
     "spotify:track:"
   );
@@ -34,7 +34,6 @@ export const handlePlay = async ({ deviceId, blindtestReady, currentTrackIndex, 
   }
 };
 
-
 export const handleNext = (currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken, counterSongs, setCounterSongs) => {
   if (!blindtestReady || !Array.isArray(blindtestReady)) {
     console.error("blindtestReady n'est pas défini ou n'est pas un tableau.");
@@ -44,7 +43,6 @@ export const handleNext = (currentTrackIndex, setCurrentTrackIndex, blindtestRea
   const nextIndex = (currentTrackIndex + 1) % blindtestReady.length;
   setCurrentTrackIndex(nextIndex);
   handlePlay({ deviceId, blindtestReady, currentTrackIndex: nextIndex, accessToken });
-
 };
 
 const getTrackDetails = async (trackId, accessToken) => {
@@ -63,8 +61,6 @@ const getTrackDetails = async (trackId, accessToken) => {
     console.error("Erreur lors de la récupération des détails de la piste :", error);
     return null;
   }
-
-
 };
 
 const refreshAccessToken = async (refreshToken) => {
@@ -208,7 +204,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
 
   useEffect(() => {
     if (blindtestReady[currentTrackIndex]) {
-      const trackId = blindtestReady[currentTrackIndex].url.split('/').pop();
+      const trackId = blindtestReady[currentTrackIndex].track.split('/').pop();
       getTrackDetails(trackId, accessToken).then(details => {
         setTrackDetails(details);
       });
@@ -336,10 +332,14 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
                     null
                   ) : (
                     <div className="track-details">
-                      <h1>The song was</h1>
+                      <h1>The song was from</h1>
+                        <div className="playlist-owner">
+                          <p>{blindtestReady[currentTrackIndex]?.owner || "Unknown Owner"}</p>
+                        </div>
                       <div className="cover">
-                        <img src={trackDetails.album.images[0].url} alt="Album cover" style={{ width: '150px', height: '150px', margin: '1rem', borderRadius: '10px' }} />
+                        <img src={trackDetails.album.images[0].url} alt="Album cover" style={{ width: '120px', height: '120px', margin: '0.5rem', borderRadius: '10px' }} />
                       </div>
+
                       <div className="track-info">
                         <div className={trackDetails.name.length > 20 ? "marquee" : ""}>
                           <p>
