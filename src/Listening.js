@@ -6,12 +6,15 @@ export function Listening( { showListening, setShowListening }) {
   return (
 
     <>
-
+      <div className="listening">
+        <img src="assets/Platine.svg" alt="Platine" className="platine"/>
       <div class="logo">
-        <img src="assets/Disco.svg" alt="Disco" />
+
+        <img src="assets/Vynil.svg" alt="Disco" className="vynil"/>
       </div>
       <div class="outer-circle"></div>
       <div class="outer-circle-2"></div>
+      </div>
     </>
   );
 }

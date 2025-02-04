@@ -8,6 +8,7 @@ import { AddPlayer } from "./AddPlayer";
 import { ScoreAdder } from "./ScoreAdder";
 import { Listening } from "./Listening";
 import { LeaderBoard } from "./LeaderBoard";
+import { PlaylistConverter } from "./PlaylistConverter";
 
 function App() {
   const [playlistsNames, setPlaylistsNames] = useState([]);
@@ -31,6 +32,7 @@ function App() {
   const [showBlindtest, setShowBlindtest] = useState(false);
   const [showListening, setShowListening] = useState(false);
   const [showLeaderBoard, setShowLeaderBoard] = useState(false);
+  const [showLogo, setShowLogo] = useState(true);
 
   return (
     <Router>
@@ -40,7 +42,9 @@ function App() {
           <Route
             path="/"
             element={
+
               <>
+              <Logo showLogo={showLogo} />
                 <AddPlayer
                   showAddPlayer={showAddPlayer}
                   setShowAddPlayer={setShowAddPlayer}
@@ -64,6 +68,8 @@ function App() {
                   playlistOwner={playlistOwner}
                   setPlaylistOwner={setPlaylistOwner}
                 />
+
+
                 {/* Passer blindtestReady comme prop */}
                 <BlindTest
                   showBlindtest={showBlindtest}
@@ -71,6 +77,7 @@ function App() {
                   setShowScoreAdder={setShowScoreAdder}
                   setShowListening={setShowListening}
                   setShowLeaderBoard={setShowLeaderBoard}
+                  setShowLogo={setShowLogo}
                   blindtestReady={blindtestReady}
                   currentTrackIndex={currentTrackIndex}
                   setCurrentTrackIndex={setCurrentTrackIndex}
@@ -96,12 +103,12 @@ function App() {
                   setShowListening={setShowListening}
                 />
                 <LeaderBoard
-                players={players}
-                scores={scores}
-                showLeaderBoard={showLeaderBoard}
-                setShowLeaderBoard={setShowLeaderBoard}
-                counterSongs={counterSongs}/>
-
+                  players={players}
+                  scores={scores}
+                  showLeaderBoard={showLeaderBoard}
+                  setShowLeaderBoard={setShowLeaderBoard}
+                  counterSongs={counterSongs}
+                />
               </>
             }
           />
@@ -112,3 +119,14 @@ function App() {
 }
 
 export default App;
+
+function Logo( {showLogo} ) {
+
+  if (!showLogo) {
+    return null;
+  }
+
+  return (
+    <img src="assets/Shook Ones Logo.svg" alt="Shook Ones Logo" className="SO-logo" />
+  )
+}

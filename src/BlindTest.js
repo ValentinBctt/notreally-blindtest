@@ -91,7 +91,8 @@ const refreshAccessToken = async (refreshToken) => {
 };
 
 export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIndex, playlistsNames,
-  setPlaylistsNames, playlistOwner, setPlaylistOwner, showBlindtest, setShowScoreAdder, setShowListening, setCounterSongs, counterSongs, setShowLeaderBoard }) {
+  setPlaylistsNames, playlistOwner, setPlaylistOwner, showBlindtest, setShowScoreAdder,
+   setShowListening, setCounterSongs, counterSongs, setShowLeaderBoard, setShowLogo }) {
   const [hasStarted, setHasStarted] = useState(false);
   const [player, setPlayer] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -312,7 +313,9 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     }
   }, [isPlaying, currentTrackIndex, setShowTrackDetails, setShowScoreAdder, counterSongs, setCounterSongs, setIsPlaying]);
 
-
+  const handleShowLogo = () => {
+    setShowLogo(false);
+  }
 
   if (!showBlindtest) {
     return null;
@@ -320,41 +323,41 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
 
   return (
     <div className="gradient">
-    <div className="blindtest">
-      {!hasStarted ? (
-        <button className="start" onClick={() => { handleStart(); handleIsPlaying(); }}>Start Blind Test</button>
-      ) : (
-        <div>
-          {isInitialized ? (
-             <div>
-             {trackDetails ? (
-              !showTrackDetails ? (
-                null
-              ) : (
-               <div className="track-details">
-                <h1>The song was</h1>
-                 <div className="cover">
-                   <img src={trackDetails.album.images[0].url} alt="Album cover" style={{ width: '100px', height: '100px' }} />
-                 </div>
-                 <div className="track-info">
-                   <p>
-                     {trackDetails.name || "Inconnue"} - {" "}
-                     <br />
-                     {trackDetails.artists?.map(artist => artist.name).join(", ") || "Inconnus"}
-                   </p>
-                 </div>
-               </div>
-              )
-             ) : (
-                {handleNext}
-              )}
-            </div>
-          ) : (
-            <p>Chargement du lecteur...</p>
-          )}
-        </div>
-      )}
-    </div>
+      <div className="blindtest">
+        {!hasStarted ? (
+          <button className="start" onClick={() => { handleStart(); handleIsPlaying(); handleShowLogo() }}>Start Blind Test</button>
+        ) : (
+          <div>
+            {isInitialized ? (
+              <div>
+                {trackDetails ? (
+                  !showTrackDetails ? (
+                    null
+                  ) : (
+                    <div className="track-details">
+                      <h1>The song was</h1>
+                      <div className="cover">
+                        <img src={trackDetails.album.images[0].url} alt="Album cover" style={{ width: '150px', height: '150px', margin: '1rem', borderRadius: '10px' }} />
+                      </div>
+                      <div className="track-info">
+                        <p>
+                          {trackDetails.name || "Inconnue"} - {" "}
+                          <br />
+                          {trackDetails.artists?.map(artist => artist.name).join(", ") || "Inconnus"}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                ) : (
+                  { handleNext }
+                )}
+              </div>
+            ) : (
+              <p>Chargement du lecteur...</p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

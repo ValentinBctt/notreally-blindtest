@@ -15,7 +15,8 @@
 }
 
 body {
-  background-color: rgb(34, 34, 34);
+  background-image: url('./assets/bg.webp');
+  background-position: left center;
   height: 100vh;
   overflow: hidden;
 
@@ -24,15 +25,17 @@ body {
 h1 {
   font-family: "ClashDisplay-Medium";
   font-size: 2rem;
-  background: var(--linear);
+
   -webkit-background-clip: text;
-  color: transparent;
+  color: white;
+  margin: 1rem 0 0 0;
 }
 
 p {
   font-family: "ClashDisplay-Medium";
   color: white;
-  font-family: 2rem;
+  font-size: 1.5rem;
+  margin-top: 0;
 }
 
 li {
@@ -66,11 +69,11 @@ button {
   margin: 0.5rem;
   border: none;
   transition: transform 0.1s ease 0s; /* Changed transition duration to 0.1s */
-  background: var(--linear);
+
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
-  border: solid 1.5px var(--jaune);
+  color: white;
+  border: solid 3px white;
   padding: 0.7rem;
 
   &:active {
@@ -85,9 +88,12 @@ button.merge {
   border-radius: 50px;
 }
 
-.add-player {
+.SO-logo {
+  margin-top: 1rem;
+  width: 70%;
 
 }
+
 
 .add-player button {
   font-size: 2rem;
@@ -112,7 +118,7 @@ button.start {
 
 .track-details {
   background-color: rgba(0, 0, 0, 0.4);
-  margin: 3rem 2rem;
+  margin: 2rem 2rem 1rem 2rem;
   border-radius: 50px;
   backdrop-filter: blur(5px);
   padding: 0.5rem;
@@ -120,12 +126,24 @@ button.start {
     0 -3px 5px 0px #FFD620,
     0 3px 5px 0px #D43A3A,
     0 1px 5px 0px #FFD100;
+    z-index: 100;
 }
 
+
 .score-adder {
+  background-color: rgba(0, 0, 0, 0.4);
+border-radius: 50px;
+  backdrop-filter: blur(5px);
+ padding: 0.5rem;
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
+  z-index: 100;
+  box-shadow:
+  0 -3px 5px 0px #FFD620,
+  0 3px 5px 0px #D43A3A,
+  0 1px 5px 0px #FFD100;
+  z-index: 100;
 }
 
 button.score {
@@ -150,9 +168,10 @@ button.score {
 }
 
 .leaderboard {
-
+  display: flex;
+  flex-direction: column;
   background-color: rgba(0, 0, 0, 0.4);
-  margin: 3rem 2rem;
+  margin: 5rem 2rem;
   border-radius: 30px;
   backdrop-filter: blur(5px);
   padding: 0.5rem;
@@ -161,6 +180,7 @@ button.score {
     0 3px 5px 0px #D43A3A,
     0 1px 5px 0px #FFD100;
     padding: 1rem 2rem 1rem 2rem;
+    z-index: 100;
 }
 
 .player {
@@ -184,6 +204,14 @@ button.score {
 
 
 
+@keyframes rotation {
+  from {
+      transform: rotate(0deg);
+  }
+  to {
+      transform: rotate(360deg);
+  }
+}
 
 .logo {
   position: absolute;
@@ -196,8 +224,21 @@ button.score {
   height: 35vmin;
   border-radius: 50%;
   background: transparent;
-  animation: circle 1.5s linear infinite, ripple 1.5s linear infinite;
+  animation: circle 1.5s linear infinite, ripple 1.5s linear infinite, spin 2s linear infinite;
+  z-index: -2;
+
+}
+
+img.platine {
+  width: 10%;
+  position: absolute;
+  left: 60%;
+  top: 40%;
   z-index: -1;
+}
+.vynil {
+  animation: rotation 2s linear infinite;
+  z-index: -2;
 }
 
 .logo .reverse {
