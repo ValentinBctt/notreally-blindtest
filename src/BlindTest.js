@@ -4,7 +4,7 @@ import { LeaderBoard } from "./LeaderBoard";
 
 const clientId = '4cab9bcc279f483da32c1e5b4bf4bde8'; // Remplacez par votre client ID
 const redirectUri = process.env.NODE_ENV === 'production'
-  ? 'https://shook-ones-ab7e5e2c1b17.herokuapp.com/callback'
+  ? 'https://https://shook-ones-ab7e5e2c1b17.herokuapp.com/callback'
   : 'http://localhost:3000/callback';
 
 const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirectUri}&scope=streaming%20user-read-playback-state%20user-modify-playback-state%20user-read-private`;
@@ -124,9 +124,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
       localStorage.setItem("spotify_refresh_token", refreshToken);
       window.history.pushState({}, null, window.location.pathname);
     } else if (!accessToken) {
-      if (window.location.hostname !== 'localhost') {
-        window.location.href = authUrl;
-      }
+      window.location.href = authUrl;
     }
   }, [accessToken, refreshToken]);
 

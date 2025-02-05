@@ -11,6 +11,8 @@ import { LeaderBoard } from "./LeaderBoard";
 import { PlaylistConverter } from "./PlaylistConverter";
 import { BlindtestCountdown } from "./BlindtestCountdown";
 
+console.log('Environment:', process.env.NODE_ENV);
+
 function App() {
   const [playlistsNames, setPlaylistsNames] = useState([]);
   const [playlistOwner, setPlaylistOwner] = useState([]);

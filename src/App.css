@@ -333,6 +333,12 @@ img.platine {
   top: 40%;
   z-index: -1;
 }
+
+@media (min-width: 500px) {
+  img.platine {
+    display: none;
+  }
+}
 .vynil {
   animation: rotation 2s linear infinite;
   z-index: -2;
