@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { LeaderBoard } from "./LeaderBoard";
 
 const clientId = '4cab9bcc279f483da32c1e5b4bf4bde8'; // Remplacez par votre client ID
-/* const redirectUri = process.env.NODE_ENV === 'production'
+const redirectUri = process.env.NODE_ENV === 'production'
   ? 'https://your-app-name.herokuapp.com/callback'
   : 'http://localhost:3000/callback';
- */
-  const redirectUri = 'https://shook-ones-ab7e5e2c1b17.herokuapp.com/callback';
+
+ /*  const redirectUri = 'https://shook-ones-ab7e5e2c1b17.herokuapp.com/callback'; */
 
 const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirectUri}&scope=streaming%20user-read-playback-state%20user-modify-playback-state%20user-read-private`;
 
@@ -294,7 +294,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
           clearTimeout(timerTrackDetailsHide);
           clearTimeout(timerLeaderBoard);
           clearTimeout(timerLeaderBoardHide);
-          setCounterSongs(0);
+          setCounterSongs(2);
           handleNext()
         };
       }
