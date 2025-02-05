@@ -124,7 +124,9 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
       localStorage.setItem("spotify_refresh_token", refreshToken);
       window.history.pushState({}, null, window.location.pathname);
     } else if (!accessToken) {
-      window.location.href = authUrl;
+      if (window.location.hostname !== 'localhost') {
+        window.location.href = authUrl;
+      }
     }
   }, [accessToken, refreshToken]);
 

@@ -106,6 +106,19 @@ button.merge {
   border-radius: 50px;
 }
 
+
+  @media (min-width: 768px) {
+    img.SO-logo {
+      width: 20%;
+    }
+
+    button.merge {
+      width: 50%;
+      font-size: 1.5rem!important;
+
+    }
+  }
+
 .SO-logo {
   margin-top: 1rem;
   width: 70%;
