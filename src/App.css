@@ -47,6 +47,13 @@ h2 {
   z-index: -1;
 }
 
+h4{
+  font-family: "ClashDisplay-Medium";
+  font-size: 0.8rem;
+  color: white;
+  margin: 0.5rem 0 0 0;
+}
+
 p {
   font-family: "ClashDisplay-Medium";
   color: white;
@@ -109,7 +116,7 @@ button {
 button.merge {
   margin-top: 2rem;
   width: 50%;
-  font-size: 1rem;
+  font-size: 1.5rem;
   border-radius: 50px;
 }
 

@@ -330,7 +330,10 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     <div className="gradient">
       <div className="blindtest">
         {!hasStarted ? (
-          <button className="start" onClick={() => { handleStart(); handleIsPlaying(); handleShowLogo() }}>Start Blind Test</button>
+          <div>
+            <button className="start" onClick={() => { handleStart(); handleIsPlaying(); handleShowLogo() }}>Start Blind Test</button>
+            <p>If it doesn't work, clear your cookies and refresh the page</p>
+          </div>
         ) : (
           <div>
             {isInitialized ? (
