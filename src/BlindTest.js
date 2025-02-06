@@ -243,29 +243,40 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
       return;
     }
 
-    try {
-      alert("▶️ Tentative de lecture...");
+    // Tentative de lecture avec vérification répétée de l'état
+    let attempts = 0;
+    const maxAttempts = 5;
+    while (attempts < maxAttempts) {
+      try {
+        alert("▶️ Tentative de lecture...");
 
-      // Vérification si le lecteur et son état sont valides
-      if (player._state && player._state.paused !== undefined) {
-        // Si l'état est valide, on continue avec la lecture
-        await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            uris: [blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:")]
-          }),
-        });
-        alert("🎵 Lecture démarrée !");
-      } else {
-        // Si l'état est inaccessible, on attend un peu et réessaie
-        alert("❌ Le lecteur n'est pas encore prêt ou l'état est inaccessible. Réessayez plus tard.");
+        // Vérification si l'état du lecteur est accessible
+        if (player._state && player._state.paused !== undefined) {
+          await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              uris: [blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:")]
+            }),
+          });
+          alert("🎵 Lecture démarrée !");
+          break; // Lecture lancée, on sort de la boucle
+        } else {
+          attempts++;
+          alert(`❌ Le lecteur n'est pas encore prêt, tentative ${attempts}/${maxAttempts}. Réessayez dans quelques secondes...`);
+          await new Promise(resolve => setTimeout(resolve, 2000)); // Attente de 2 secondes avant de réessayer
+        }
+      } catch (error) {
+        alert("❌ Erreur lors du démarrage de la lecture : " + error.message);
+        break;
       }
-    } catch (error) {
-      alert("❌ Erreur lors du démarrage de la lecture : " + error.message);
+    }
+
+    if (attempts === maxAttempts) {
+      alert("❌ Le lecteur n'est toujours pas prêt après plusieurs tentatives. Réessayez plus tard.");
     }
 
     setHasStarted(true);
