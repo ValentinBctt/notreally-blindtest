@@ -228,41 +228,50 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     console.log("🔹 Bouton Start cliqué !");
 
     if (!player) {
-      alert("Le lecteur Spotify n'est pas prêt. Attendez quelques secondes et réessayez.");
+      console.error("❌ Le lecteur Spotify n'est pas prêt.");
+      alert("Le lecteur Spotify n'est pas encore prêt. Veuillez patienter.");
       return;
     }
 
     console.log("🎧 Connexion au lecteur...");
     const isConnected = await player.connect();
+    console.log("✅ Lecteur connecté :", isConnected);
+
     if (!isConnected) {
-      alert("Impossible de se connecter au lecteur Spotify. Vérifiez que Spotify est ouvert sur votre appareil.");
+      console.error("❌ Impossible de connecter le lecteur.");
+      alert("Connexion au lecteur Spotify impossible. Vérifiez que Spotify est ouvert.");
       return;
     }
 
-    console.log("✅ Lecteur connecté. Sélection du device...");
+    console.log("📡 Sélection du device ID :", deviceId);
+    if (!deviceId) {
+      console.error("❌ Aucun device ID disponible.");
+      alert("Le lecteur Spotify n'est pas disponible. Attendez quelques secondes et réessayez.");
+      return;
+    }
 
-    await fetch(`https://api.spotify.com/v1/me/player`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        device_ids: [deviceId],
-        play: true, // Démarrer la lecture immédiatement
-      }),
-    }).then((res) => {
-      if (res.ok) {
-        console.log("🎵 Lecture lancée !");
-      } else {
-        console.error("❌ Erreur lors du démarrage de la lecture :", res);
-        alert("Problème lors du démarrage de la lecture. Vérifiez que Spotify est ouvert.");
-      }
-    });
+    try {
+      console.log("▶️ Tentative de lecture...");
+      await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ uris: [blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:")] }),
+      });
+      console.log("🎵 Lecture démarrée !");
+    } catch (error) {
+      console.error("❌ Erreur lors du démarrage de la lecture :", error);
+      alert("Erreur lors du démarrage de la lecture. Vérifiez votre connexion.");
+    }
 
+    setHasStarted(true);
+    setShowListening(true);
     handleIsPlaying();
-    handleShowLogo();
+
   };
+
 
 
   useEffect(() => {
