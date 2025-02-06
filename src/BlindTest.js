@@ -4,9 +4,15 @@ import { LeaderBoard } from "./LeaderBoard";
 import { RevealTop } from "./Reveal";
 
 const clientId = '4cab9bcc279f483da32c1e5b4bf4bde8'; // Remplacez par votre client ID
-const redirectUri = process.env.NODE_ENV === 'production'
+
+
+/* const redirectUri = process.env.NODE_ENV === 'production'
   ? 'https://shook-ones-ab7e5e2c1b17.herokuapp.com/callback'
-  : 'http://localhost:3000/callback';
+  : 'http://localhost:3000/callback'; */
+
+const redirectUri = 'https://shook-ones-ab7e5e2c1b17.herokuapp.com/callback'
+
+
 
 const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirectUri}&scope=streaming%20user-read-playback-state%20user-modify-playback-state%20user-read-private`;
 
@@ -330,7 +336,40 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
       <div className="blindtest">
         {!hasStarted ? (
           <div>
-            <button className="start" onClick={() => { handleStart(); handleIsPlaying(); handleShowLogo() }}>Start Blind Test</button>
+            <button
+  className="start"
+  onClick={async () => {
+    console.log("Device ID actuel :", deviceId);
+
+    // Vérifie si le lecteur est prêt
+    if (!deviceId) {
+      alert("Le lecteur Spotify n'est pas prêt. Attendez quelques secondes puis réessayez.");
+      return;
+    }
+
+    // Vérifie si l'access token est valide
+    if (!accessToken) {
+      console.log("Access Token expiré ou inexistant, tentative de rafraîchissement...");
+      const newAccessToken = await refreshAccessToken(refreshToken);
+      if (!newAccessToken) {
+        alert("Impossible d'obtenir un nouvel access token. Essayez de vous reconnecter.");
+        return;
+      }
+      setAccessToken(newAccessToken);
+      localStorage.setItem("spotify_access_token", newAccessToken);
+    }
+
+    // Petit délai avant de lancer la musique (pour éviter les erreurs sur mobile)
+    setTimeout(() => {
+      handleStart();
+      handleIsPlaying();
+      handleShowLogo();
+    }, 500);
+  }}
+>
+  Start Blind Test
+</button>
+
             <p>If it doesn't work, clear your cookies and refresh the page</p>
           </div>
         ) : (
