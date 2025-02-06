@@ -225,33 +225,30 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
   }, [currentTrackIndex, blindtestReady, accessToken]);
 
   const handleStart = async () => {
-    console.log("🔹 Bouton Start cliqué !");
+    alert("🔹 Bouton Start cliqué !");
 
     if (!player) {
-      console.error("❌ Le lecteur Spotify n'est pas prêt.");
-      alert("Le lecteur Spotify n'est pas encore prêt. Veuillez patienter.");
+      alert("❌ Le lecteur Spotify n'est pas prêt.");
       return;
     }
 
-    console.log("🎧 Connexion au lecteur...");
+    alert("🎧 Connexion au lecteur...");
     const isConnected = await player.connect();
-    console.log("✅ Lecteur connecté :", isConnected);
+    alert("✅ Lecteur connecté : " + isConnected);
 
     if (!isConnected) {
-      console.error("❌ Impossible de connecter le lecteur.");
-      alert("Connexion au lecteur Spotify impossible. Vérifiez que Spotify est ouvert.");
+      alert("❌ Impossible de connecter le lecteur.");
       return;
     }
 
-    console.log("📡 Sélection du device ID :", deviceId);
+    alert("📡 Sélection du device ID : " + deviceId);
     if (!deviceId) {
-      console.error("❌ Aucun device ID disponible.");
-      alert("Le lecteur Spotify n'est pas disponible. Attendez quelques secondes et réessayez.");
+      alert("❌ Aucun device ID disponible.");
       return;
     }
 
     try {
-      console.log("▶️ Tentative de lecture...");
+      alert("▶️ Tentative de lecture...");
       await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
         method: "PUT",
         headers: {
@@ -260,17 +257,17 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
         },
         body: JSON.stringify({ uris: [blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:")] }),
       });
-      console.log("🎵 Lecture démarrée !");
+      alert("🎵 Lecture démarrée !");
     } catch (error) {
-      console.error("❌ Erreur lors du démarrage de la lecture :", error);
-      alert("Erreur lors du démarrage de la lecture. Vérifiez votre connexion.");
+      alert("❌ Erreur lors du démarrage de la lecture : " + error.message);
     }
 
     setHasStarted(true);
     setShowListening(true);
     handleIsPlaying();
-
+    handleShowLogo();
   };
+
 
 
 
