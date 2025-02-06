@@ -1,4 +1,6 @@
 
+import { RevealTop } from "./Reveal";
+
 export function LeaderBoard({ players, scores, showLeaderBoard, setShowLeaderBoard, counterSongs }) {
   const sortedPlayers = [...players].sort((a, b) => scores[b] - scores[a]);
 
@@ -7,6 +9,8 @@ export function LeaderBoard({ players, scores, showLeaderBoard, setShowLeaderBoa
   }
 
   return (
+
+
     <div className="leaderboard">
       <h1>LeaderBoard</h1>
       <ol>
@@ -21,5 +25,6 @@ export function LeaderBoard({ players, scores, showLeaderBoard, setShowLeaderBoa
         ))}
       </ol>
     </div>
+    
   );
 }

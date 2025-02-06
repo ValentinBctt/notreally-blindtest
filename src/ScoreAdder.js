@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useRef } from 'react';
 import { handlePlay, handleNext} from './BlindTest';
+import { RevealBot } from './Reveal';
 
 export function ScoreAdder({ players, scores, setScores, currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken, showScoreAdder, setShowScoreAdder }) {
 
@@ -38,16 +39,17 @@ export function ScoreAdder({ players, scores, setScores, currentTrackIndex, setC
   }
 
   return (
-    <div className="score-adder">
-      <h1>Who guess first ?</h1>
-      <div className="all-players-score">
-      {players.map((player) => (
-        <button className="score" key={player} onClick={() => { handleScoreChange(player);  }}>
-          {player}
-
-        </button>
-      ))}
+    <RevealBot trigger={showScoreAdder} reverse={!showScoreAdder}>
+      <div className="score-adder">
+        <h1>Who guess first ?</h1>
+        <div className="all-players-score">
+          {players.map((player) => (
+            <button className="score" key={player} onClick={() => { handleScoreChange(player); }}>
+              {player}
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
+    </RevealBot>
   );
 }

@@ -8,8 +8,11 @@ import { AddPlayer } from "./AddPlayer";
 import { ScoreAdder } from "./ScoreAdder";
 import { Listening } from "./Listening";
 import { LeaderBoard } from "./LeaderBoard";
+
 import { PlaylistConverter } from "./PlaylistConverter";
 import { BlindtestCountdown } from "./BlindtestCountdown";
+
+import { RevealTop } from "./Reveal";
 
 console.log('Environment:', process.env.NODE_ENV);
 
@@ -72,6 +75,7 @@ function App() {
                 />
 
                 {/* Passer blindtestReady comme prop */}
+
                 <BlindTest
                   showBlindtest={showBlindtest}
                   setShowBlindtest={setShowBlindtest}
@@ -129,10 +133,12 @@ function Logo({ showLogo }) {
   }
 
   return (
+    <RevealTop>
     <img
       src="assets/Shook Ones Logo.svg"
       alt="Shook Ones Logo"
       className="SO-logo"
     />
+    </RevealTop>
   );
 }
