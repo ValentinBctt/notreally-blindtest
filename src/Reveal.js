@@ -19,8 +19,8 @@ export function RevealTop({ children, trigger, reverse }) {
     <motion.div
       key={key}
       ref={ref}
-      initial={{ opacity: 0, y: reverse ? 50 : -50 }}
-      animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : (reverse ? 50 : -50) }}
+      initial={{ opacity: 0, x: reverse ? 50 : -50 }}
+      animate={{ opacity: inView ? 1 : 0, x: inView ? 0 : (reverse ? 50 : -50) }}
       transition={{ duration: 0.6 }}
     >
       {children}
@@ -45,8 +45,8 @@ export function RevealBot({ children, trigger, reverse }) {
     <motion.div
       key={key}
       ref={ref}
-      initial={{ opacity: 0, y: reverse ? 0 : 20 }}
-      animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : (reverse ? -20 : 20) }}
+      initial={{ opacity: 0, x: reverse ? 0 : 20 }}
+      animate={{ opacity: inView ? 1 : 0, x: inView ? 0 : (reverse ? -20 : 20) }}
       transition={{ duration: 0.6 }}
     >
       {children}

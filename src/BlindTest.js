@@ -4,15 +4,11 @@ import { LeaderBoard } from "./LeaderBoard";
 import { RevealTop } from "./Reveal";
 
 const clientId = '4cab9bcc279f483da32c1e5b4bf4bde8'; // Remplacez par votre client ID
+const redirectUri = process.env.NODE_ENV === 'production'
+  ? 'https://your-app-name.herokuapp.com/callback'
+  : 'http://localhost:3000/callback';
 
-
-/* const redirectUri = process.env.NODE_ENV === 'production'
-  ? 'https://shook-ones-ab7e5e2c1b17.herokuapp.com/callback'
-  : 'http://localhost:3000/callback'; */
-
-const redirectUri = 'https://shook-ones-ab7e5e2c1b17.herokuapp.com/callback'
-
-
+/*   const redirectUri = 'https://shook-ones-ab7e5e2c1b17.herokuapp.com/callback'; */
 
 const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirectUri}&scope=streaming%20user-read-playback-state%20user-modify-playback-state%20user-read-private`;
 
@@ -224,88 +220,20 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     }
   }, [currentTrackIndex, blindtestReady, accessToken]);
 
-  const handleStart = async () => {
-    alert("🔹 Bouton Start cliqué !");
-
-    if (!player) {
-      alert("❌ Le lecteur Spotify n'est pas prêt.");
-      return;
-    }
-
-    const isConnected = await player.connect();
-    if (!isConnected) {
-      alert("❌ Impossible de connecter le lecteur.");
-      return;
-    }
-
+  const handleStart = () => {
     if (!deviceId) {
-      alert("❌ Aucun device ID disponible.");
+      console.error("Le lecteur n'est pas encore prêt.");
       return;
     }
-
-    try {
-      alert("▶️ Tentative de lecture...");
-
-      // Vérification si l'état du lecteur est accessible
-      if (player._state && player._state.paused !== undefined) {
-        await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            uris: [blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:")]
-          }),
-        });
-        alert("🎵 Lecture démarrée !");
-      } else {
-        alert("❌ Le lecteur n'est pas encore prêt. Veuillez réessayer plus tard.");
-        const trackUri = blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:");
-        window.location.href = trackUri; // Forcer l'ouverture de l'app Spotify
-      }
-
-    } catch (error) {
-      alert("❌ Erreur lors du démarrage de la lecture : " + error.message);
-    }
-
     setHasStarted(true);
+
+    handlePlay({ deviceId, blindtestReady, currentTrackIndex, accessToken });
     setShowListening(true);
-    handleIsPlaying();
-    handleShowLogo();
   };
 
-  const handleNext = async () => {
-    alert("▶️ Changement de musique...");
-
-    currentTrackIndex = (currentTrackIndex + 1) % blindtestReady.length; // Passe à la chanson suivante
-
-    try {
-      await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          uris: [blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:")]
-        }),
-      });
-      alert("🎵 Chanson suivante lancée !");
-    } catch (error) {
-      alert("❌ Erreur lors du changement de musique : " + error.message);
-    }
-  };
-
-
-
-
-
-
-
-
-
-
+  const handleIsPlaying = () => {
+    setIsPlaying(!isPlaying);
+  }
 
   useEffect(() => {
     // Lancer un timer de 30 secondes si la musique est en lecture
@@ -367,7 +295,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
           clearTimeout(timerTrackDetailsHide);
           clearTimeout(timerLeaderBoard);
           clearTimeout(timerLeaderBoardHide);
-          setCounterSongs(0);
+          setCounterSongs(2);
           handleNext()
         };
       }
@@ -391,10 +319,6 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     }
   }, [isPlaying, currentTrackIndex, setShowTrackDetails, setShowScoreAdder, counterSongs, setCounterSongs, setIsPlaying]);
 
-  const handleIsPlaying = () => {
-    setIsPlaying(true);
-  };
-
   const handleShowLogo = () => {
     setShowLogo(false);
   }
@@ -408,44 +332,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
       <div className="blindtest">
         {!hasStarted ? (
           <div>
-
-
-            <button
-  className="start"
-
-  onClick={async () => {
-
-    console.log("Device ID actuel :", deviceId);
-
-    // Vérifie si le lecteur est prêt
-    if (!deviceId) {
-      alert("Le lecteur Spotify n'est pas prêt. Attendez quelques secondes puis réessayez.");
-      return;
-    }
-
-    // Vérifie si l'access token est valide
-    if (!accessToken) {
-      console.log("Access Token expiré ou inexistant, tentative de rafraîchissement...");
-      const newAccessToken = await refreshAccessToken(refreshToken);
-      if (!newAccessToken) {
-        alert("Impossible d'obtenir un nouvel access token. Essayez de vous reconnecter.");
-        return;
-      }
-      setAccessToken(newAccessToken);
-      localStorage.setItem("spotify_access_token", newAccessToken);
-    }
-
-    // Petit délai avant de lancer la musique (pour éviter les erreurs sur mobile)
-    setTimeout(() => {
-      handleStart();
-      handleIsPlaying();
-      handleShowLogo();
-    }, 500);
-  }}
->
-  Start Blind Test
-</button>
-
+            <button className="start" onClick={() => { handleStart(); handleIsPlaying(); handleShowLogo() }}>Start Blind Test</button>
             <p>If it doesn't work, clear your cookies and refresh the page</p>
           </div>
         ) : (
@@ -463,7 +350,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
                           <p>{blindtestReady[currentTrackIndex]?.owner || "Unknown Owner"}</p>
                         </div>
                       <div className="cover">
-                        <img src={trackDetails.album.images[0].url} alt="Album cover" style={{ width: '120px', height: '120px', margin: '0.5rem', borderRadius: '10px' }} />
+                        <img src={trackDetails.album.images[0].url} alt="Album cover" style={{ width: '150px', height: '150px', margin: '0.5rem', borderRadius: '10px' }} />
                       </div>
 
                       <div className="track-info">

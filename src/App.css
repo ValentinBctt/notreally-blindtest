@@ -18,12 +18,13 @@ input {
   font-size: 16px; /* Prevent zoom on mobile */
 }
 body {
-  background-image: url('./assets/bg.webp');
+  background-image: url('./assets/bg4.webp');
   background-position: left center;
   height: 100vh;
   background-repeat: no-repeat;
   background-size: cover;
   overflow: hidden;
+  background-size: 120%;
 
 }
 
@@ -58,7 +59,7 @@ p {
   font-family: "ClashDisplay-Medium";
   color: white;
   font-size: 1.2rem;
-  margin-top: 0;
+  margin-top: 1rem;
   margin-bottom: 0.5rem;
 }
 
@@ -66,6 +67,8 @@ li {
   font-family: "ClashDisplay-Medium";
   color: white;
   list-style-type: none;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
 
 }
 
@@ -167,7 +170,7 @@ button.start {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 80%;
+  width: 60%;
   margin: auto;
   &:active {
     transform: translate(-50%, -50%) scale(0.9);
@@ -176,7 +179,7 @@ button.start {
 
 .track-details {
   background-color: rgba(0, 0, 0, 0.4);
-  margin: 2rem 1rem 0.5rem 1rem;
+  margin: 2rem 1rem 0.5rem 0;
   border-radius: 30px;
   backdrop-filter: blur(5px);
   padding: 0.5rem;
@@ -188,17 +191,25 @@ button.start {
 }
 
 @media (min-width: 768px) {
+ .track-scores {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 4rem;
+
+  }
   .track-details {
-    width: 40%;
-    margin: 4rem 0 0.5rem 2rem;
+
+    width: 90%;
+    height: 50%;
+    margin: auto 1rem auto 0;
+    padding: 3rem 3rem;
   }
 
   .score-adder {
-    position: absolute;
-    top: 3rem;
-    right: 2rem;
-    width: 40%;
-    margin: 0 2rem 0.5rem auto;
+
+    width: 100%;
+    margin: auto 5rem auto 0;
+    padding: 2rem;
   }
 
   .leaderboard {
@@ -239,23 +250,33 @@ button.start {
 }
 
 .score-adder {
-  margin-top: 1.5rem;
   background-color: rgba(0, 0, 0, 0.4);
-border-radius: 30px;
+  border-radius: 30px;
   backdrop-filter: blur(5px);
- padding: 0.5rem;
+  padding: 0.5rem;
   display: flex;
+  flex-direction: column;
   justify-content: space-around;
   flex-wrap: wrap;
   z-index: 100;
   box-shadow:
-  0 -3px 5px 0px #FFD620,
-  0 3px 5px 0px #D43A3A,
-  0 1px 5px 0px #FFD100;
-  z-index: 100;
+    0 -3px 5px 0px #FFD620,
+    0 3px 5px 0px #D43A3A,
+    0 1px 5px 0px #FFD100;
+}
+
+.score-adder h1 {
+  order: -1;
+  margin-bottom: 1rem;
+}
+
+.score-adder > * {
+  flex: 1 1 calc(33.333% - 1rem);
+  margin: 0.5rem;
 }
 
 button.score {
+  margin: 0.3rem!important;
   font-size: 1.2rem;
   background-color: rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease 0s;
@@ -264,8 +285,8 @@ button.score {
   color: white;
   backdrop-filter: blur(40px);
   padding: 0.5rem;
-  height: 6rem;
-  width: 6rem;
+  height: 8rem;
+  width: 8rem;
   box-shadow:
     0 -2px 5px 0px #FFD620,
     0 2px 5px 0px #D43A3A,
@@ -275,6 +296,20 @@ button.score {
       transform: scale(0.9);
     }
 }
+
+.all-players-score {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.1rem;
+  align-items: center;
+  justify-content: center;
+  justify-items: center; /* Center items horizontally */
+}
+
+.all-players-score button {
+
+}
+
 
 .leaderboard {
   position: absolute;

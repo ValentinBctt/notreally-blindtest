@@ -75,7 +75,7 @@ function App() {
                 />
 
                 {/* Passer blindtestReady comme prop */}
-
+                <div className="track-scores">
                 <BlindTest
                   showBlindtest={showBlindtest}
                   setShowBlindtest={setShowBlindtest}
@@ -103,6 +103,7 @@ function App() {
                   scores={scores}
                   setScores={setScores}
                 />
+                </div>
                 <Listening
                   showListening={showListening}
                   setShowListening={setShowListening}
