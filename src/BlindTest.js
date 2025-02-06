@@ -232,16 +232,12 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
       return;
     }
 
-    alert("🎧 Connexion au lecteur...");
     const isConnected = await player.connect();
-    alert("✅ Lecteur connecté : " + isConnected);
-
     if (!isConnected) {
       alert("❌ Impossible de connecter le lecteur.");
       return;
     }
 
-    alert("📡 Sélection du device ID : " + deviceId);
     if (!deviceId) {
       alert("❌ Aucun device ID disponible.");
       return;
@@ -277,6 +273,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     handleIsPlaying();
     handleShowLogo();
   };
+
 
 
 
