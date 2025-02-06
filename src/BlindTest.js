@@ -272,19 +272,28 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
 
       alert("🎵 Lecture démarrée !");
 
-      // Vérification de l'état du player après la tentative de lecture
+      // Vérification de l'état du player
       setTimeout(async () => {
         try {
           const playerStateResponse = await fetch("https://api.spotify.com/v1/me/player", {
             headers: { Authorization: `Bearer ${accessToken}` },
           });
 
-          // Log pour vérifier la réponse de l'état du player
           const playerState = await playerStateResponse.json();
           console.log("🎧 État du player après tentative de lecture :", playerState);
 
+          // Si le player est en pause, essayons de le reprendre
           if (!playerState.is_playing) {
-            alert("❌ Spotify n'a pas lancé la lecture. Essaie de lancer une musique dans l'app avant.");
+            console.log("La musique est en pause. Tentons de reprendre.");
+            await fetch("https://api.spotify.com/v1/me/player/play?device_id=" + deviceId, {
+              method: "PUT",
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ uris: [trackUri] }), // Tentons de redémarrer la lecture.
+            });
+            alert("✅ Lecture reprise.");
           } else {
             alert("✅ La lecture est bien en cours !");
           }
