@@ -224,23 +224,46 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     }
   }, [currentTrackIndex, blindtestReady, accessToken]);
 
-  const handleStart = () => {
-    if (!deviceId) {
-      console.error("Le lecteur n'est pas encore prêt.");
+  const handleStart = async () => {
+    console.log("🔹 Bouton Start cliqué !");
+
+    if (!player) {
+      alert("Le lecteur Spotify n'est pas prêt. Attendez quelques secondes et réessayez.");
       return;
-
     }
-    
-    player?.togglePlay()
-    setHasStarted(true);
 
-    handlePlay({ deviceId, blindtestReady, currentTrackIndex, accessToken });
-    setShowListening(true);
+    console.log("🎧 Connexion au lecteur...");
+    const isConnected = await player.connect();
+    if (!isConnected) {
+      alert("Impossible de se connecter au lecteur Spotify. Vérifiez que Spotify est ouvert sur votre appareil.");
+      return;
+    }
+
+    console.log("✅ Lecteur connecté. Sélection du device...");
+
+    await fetch(`https://api.spotify.com/v1/me/player`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        device_ids: [deviceId],
+        play: true, // Démarrer la lecture immédiatement
+      }),
+    }).then((res) => {
+      if (res.ok) {
+        console.log("🎵 Lecture lancée !");
+      } else {
+        console.error("❌ Erreur lors du démarrage de la lecture :", res);
+        alert("Problème lors du démarrage de la lecture. Vérifiez que Spotify est ouvert.");
+      }
+    });
+
+    handleIsPlaying();
+    handleShowLogo();
   };
 
-  const handleIsPlaying = () => {
-    setIsPlaying(!isPlaying);
-  }
 
   useEffect(() => {
     // Lancer un timer de 30 secondes si la musique est en lecture
@@ -325,6 +348,10 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
       };
     }
   }, [isPlaying, currentTrackIndex, setShowTrackDetails, setShowScoreAdder, counterSongs, setCounterSongs, setIsPlaying]);
+
+  const handleIsPlaying = () => {
+    setIsPlaying(true);
+  };
 
   const handleShowLogo = () => {
     setShowLogo(false);

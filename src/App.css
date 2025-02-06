@@ -96,7 +96,7 @@ button {
   font-family: "ClashDisplay-Medium";
   border-radius: 20px;
   padding: 0.5rem;
-  margin: 0.5rem;
+  margin: 1rem;
   border: none;
   transition: transform 0.1s ease 0s; /* Changed transition duration to 0.1s */
 
@@ -114,9 +114,9 @@ button {
 .add-player button
 
 button.merge {
-  margin-top: 3rem;
+
   width: 50%;
-  font-size: 1.5rem;
+
   border-radius: 50px;
 }
 
