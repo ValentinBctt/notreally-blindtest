@@ -234,14 +234,8 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
 
     const isConnected = await player.connect();
     if (!isConnected) {
-      alert("❌ Impossible de connecter le lecteur. Tentative de reconnexion...");
-      await player.disconnect();  // Déconnecte avant de réessayer
-      await player.connect();     // Essaye de reconnecter
-      alert("🎧 Reconnexion au lecteur Spotify...");
-      if (!await player.connect()) {
-        alert("❌ Impossible de se reconnecter au lecteur.");
-        return;
-      }
+      alert("❌ Impossible de connecter le lecteur.");
+      return;
     }
 
     if (!deviceId) {
@@ -249,49 +243,58 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
       return;
     }
 
-    // Tentative de lecture avec vérification répétée de l'état
-    let attempts = 0;
-    const maxAttempts = 5;
-    while (attempts < maxAttempts) {
-      try {
-        alert("▶️ Tentative de lecture...");
+    try {
+      alert("▶️ Tentative de lecture...");
 
-        // Vérification si l'état du lecteur est accessible
-        if (player._state && player._state.paused !== undefined) {
-          await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              uris: [blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:")]
-            }),
-          });
-          alert("🎵 Lecture démarrée !");
-          break; // Lecture lancée, on sort de la boucle
-        } else {
-          attempts++;
-          alert(`❌ Le lecteur n'est pas encore prêt, tentative ${attempts}/${maxAttempts}. Réessayez dans quelques secondes...`);
-          await new Promise(resolve => setTimeout(resolve, 2000)); // Attente de 2 secondes avant de réessayer
-        }
-      } catch (error) {
-        alert("❌ Erreur lors du démarrage de la lecture : " + error.message);
-        break;
+      // Vérification si l'état du lecteur est accessible
+      if (player._state && player._state.paused !== undefined) {
+        await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            uris: [blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:")]
+          }),
+        });
+        alert("🎵 Lecture démarrée !");
+      } else {
+        alert("❌ Le lecteur n'est pas encore prêt. Veuillez réessayer plus tard.");
+        const trackUri = blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:");
+        window.location.href = trackUri; // Forcer l'ouverture de l'app Spotify
       }
-    }
 
-    if (attempts === maxAttempts) {
-      alert("❌ Le lecteur n'est toujours pas prêt après plusieurs tentatives. Réessayez plus tard.");
-      // Lien direct pour ouvrir Spotify et jouer la musique
-      const trackUri = blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:");
-      window.location.href = trackUri; // Force l'ouverture de l'app Spotify
+    } catch (error) {
+      alert("❌ Erreur lors du démarrage de la lecture : " + error.message);
     }
 
     setHasStarted(true);
     setShowListening(true);
     handleIsPlaying();
     handleShowLogo();
+  };
+
+  const handleNext = async () => {
+    alert("▶️ Changement de musique...");
+
+    currentTrackIndex = (currentTrackIndex + 1) % blindtestReady.length; // Passe à la chanson suivante
+
+    try {
+      await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          uris: [blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:")]
+        }),
+      });
+      alert("🎵 Chanson suivante lancée !");
+    } catch (error) {
+      alert("❌ Erreur lors du changement de musique : " + error.message);
+    }
   };
 
 
