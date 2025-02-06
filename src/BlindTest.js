@@ -336,9 +336,15 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
       <div className="blindtest">
         {!hasStarted ? (
           <div>
+            <button onClick={() => player?.togglePlay()}>
+  ▶️ Play
+</button>
+
             <button
   className="start"
+
   onClick={async () => {
+
     console.log("Device ID actuel :", deviceId);
 
     // Vérifie si le lecteur est prêt
