@@ -263,7 +263,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
         body: JSON.stringify({ uris: [trackUri] }),
       });
 
-      // Log pour vérifier si la requête a réussi
+      // Log pour vérifier la réponse de l'API
       if (!response.ok) {
         console.error("❌ Erreur lors de la requête pour démarrer la lecture : ", response.statusText);
         alert("❌ Erreur lors du démarrage de la lecture.");
@@ -282,10 +282,11 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
           const playerState = await playerStateResponse.json();
           console.log("🎧 État du player après tentative de lecture :", playerState);
 
-          // Si le player est en pause, essayons de le reprendre
           if (!playerState.is_playing) {
-            console.log("La musique est en pause. Tentons de reprendre.");
-            await fetch("https://api.spotify.com/v1/me/player/play?device_id=" + deviceId, {
+            console.log("La musique est en pause ou n'a pas démarré. Tentons de relancer...");
+
+            // Essayons de relancer la lecture
+            const resumeResponse = await fetch("https://api.spotify.com/v1/me/player/play?device_id=" + deviceId, {
               method: "PUT",
               headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -293,7 +294,13 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
               },
               body: JSON.stringify({ uris: [trackUri] }), // Tentons de redémarrer la lecture.
             });
-            alert("✅ Lecture reprise.");
+
+            if (!resumeResponse.ok) {
+              console.error("❌ Erreur lors de la reprise de la lecture : ", resumeResponse.statusText);
+              alert("❌ Impossible de reprendre la lecture.");
+            } else {
+              alert("✅ Lecture reprise.");
+            }
           } else {
             alert("✅ La lecture est bien en cours !");
           }
@@ -313,6 +320,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     handleIsPlaying();
     handleShowLogo();
   };
+
 
 
 
