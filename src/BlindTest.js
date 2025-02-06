@@ -285,8 +285,8 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
           if (!playerState.is_playing) {
             console.log("La musique est en pause ou n'a pas démarré. Tentons de relancer...");
 
-            // Essayons de relancer la lecture
-            const resumeResponse = await fetch("https://api.spotify.com/v1/me/player/play?device_id=" + deviceId, {
+            // Tentons de forcer la lecture en envoyant la commande explicitement pour démarrer la musique
+            const forcePlayResponse = await fetch("https://api.spotify.com/v1/me/player/play?device_id=" + deviceId, {
               method: "PUT",
               headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -295,8 +295,8 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
               body: JSON.stringify({ uris: [trackUri] }), // Tentons de redémarrer la lecture.
             });
 
-            if (!resumeResponse.ok) {
-              console.error("❌ Erreur lors de la reprise de la lecture : ", resumeResponse.statusText);
+            if (!forcePlayResponse.ok) {
+              console.error("❌ Erreur lors de la reprise de la lecture : ", forcePlayResponse.statusText);
               alert("❌ Impossible de reprendre la lecture.");
             } else {
               alert("✅ Lecture reprise.");
@@ -320,6 +320,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     handleIsPlaying();
     handleShowLogo();
   };
+
 
 
 
