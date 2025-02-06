@@ -263,7 +263,6 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
         body: JSON.stringify({ uris: [trackUri] }),
       });
 
-      // Log pour vérifier la réponse de l'API
       if (!response.ok) {
         console.error("❌ Erreur lors de la requête pour démarrer la lecture : ", response.statusText);
         alert("❌ Erreur lors du démarrage de la lecture.");
@@ -272,7 +271,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
 
       alert("🎵 Lecture démarrée !");
 
-      // Vérification de l'état du player
+      // Vérification de l'état du player après une courte attente (pour s'assurer que la musique a démarré)
       setTimeout(async () => {
         try {
           const playerStateResponse = await fetch("https://api.spotify.com/v1/me/player", {
@@ -285,7 +284,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
           if (!playerState.is_playing) {
             console.log("La musique est en pause ou n'a pas démarré. Tentons de relancer...");
 
-            // Tentons de forcer la lecture en envoyant la commande explicitement pour démarrer la musique
+            // Si la musique est en pause ou ne se lance pas, forçons la reprise de la lecture
             const forcePlayResponse = await fetch("https://api.spotify.com/v1/me/player/play?device_id=" + deviceId, {
               method: "PUT",
               headers: {
