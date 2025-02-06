@@ -234,8 +234,14 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
 
     const isConnected = await player.connect();
     if (!isConnected) {
-      alert("❌ Impossible de connecter le lecteur.");
-      return;
+      alert("❌ Impossible de connecter le lecteur. Tentative de reconnexion...");
+      await player.disconnect();  // Déconnecte avant de réessayer
+      await player.connect();     // Essaye de reconnecter
+      alert("🎧 Reconnexion au lecteur Spotify...");
+      if (!await player.connect()) {
+        alert("❌ Impossible de se reconnecter au lecteur.");
+        return;
+      }
     }
 
     if (!deviceId) {
@@ -277,6 +283,9 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
 
     if (attempts === maxAttempts) {
       alert("❌ Le lecteur n'est toujours pas prêt après plusieurs tentatives. Réessayez plus tard.");
+      // Lien direct pour ouvrir Spotify et jouer la musique
+      const trackUri = blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:");
+      window.location.href = trackUri; // Force l'ouverture de l'app Spotify
     }
 
     setHasStarted(true);
@@ -284,6 +293,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     handleIsPlaying();
     handleShowLogo();
   };
+
 
 
 
