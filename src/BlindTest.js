@@ -249,69 +249,27 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
 
     try {
       alert("▶️ Tentative de lecture...");
-      const trackUri = blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:");
 
-      // Log pour vérifier l'URI de la piste
-      console.log("URI de la piste :", trackUri);
-
-      const response = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ uris: [trackUri] }),
-      });
-
-      if (!response.ok) {
-        console.error("❌ Erreur lors de la requête pour démarrer la lecture : ", response.statusText);
-        alert("❌ Erreur lors du démarrage de la lecture.");
-        return;
+      // Vérification si le lecteur et son état sont valides
+      if (player._state && player._state.paused !== undefined) {
+        // Si l'état est valide, on continue avec la lecture
+        await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            uris: [blindtestReady[currentTrackIndex].track.replace("https://open.spotify.com/track/", "spotify:track:")]
+          }),
+        });
+        alert("🎵 Lecture démarrée !");
+      } else {
+        // Si l'état est inaccessible, on attend un peu et réessaie
+        alert("❌ Le lecteur n'est pas encore prêt ou l'état est inaccessible. Réessayez plus tard.");
       }
-
-      alert("🎵 Lecture démarrée !");
-
-      // Vérification de l'état du player après une courte attente (pour s'assurer que la musique a démarré)
-      setTimeout(async () => {
-        try {
-          const playerStateResponse = await fetch("https://api.spotify.com/v1/me/player", {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          });
-
-          const playerState = await playerStateResponse.json();
-          console.log("🎧 État du player après tentative de lecture :", playerState);
-
-          if (!playerState.is_playing) {
-            console.log("La musique est en pause ou n'a pas démarré. Tentons de relancer...");
-
-            // Si la musique est en pause ou ne se lance pas, forçons la reprise de la lecture
-            const forcePlayResponse = await fetch("https://api.spotify.com/v1/me/player/play?device_id=" + deviceId, {
-              method: "PUT",
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ uris: [trackUri] }), // Tentons de redémarrer la lecture.
-            });
-
-            if (!forcePlayResponse.ok) {
-              console.error("❌ Erreur lors de la reprise de la lecture : ", forcePlayResponse.statusText);
-              alert("❌ Impossible de reprendre la lecture.");
-            } else {
-              alert("✅ Lecture reprise.");
-            }
-          } else {
-            alert("✅ La lecture est bien en cours !");
-          }
-        } catch (error) {
-          console.error("❌ Erreur lors de la vérification de l'état du player : ", error);
-          alert("❌ Erreur lors de la vérification du player.");
-        }
-      }, 2000); // Attente de 2 secondes pour donner le temps à Spotify de démarrer la musique
-
     } catch (error) {
       alert("❌ Erreur lors du démarrage de la lecture : " + error.message);
-      console.error("❌ Erreur dans la fonction handleStart : ", error);
     }
 
     setHasStarted(true);
@@ -319,6 +277,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     handleIsPlaying();
     handleShowLogo();
   };
+
 
 
 
