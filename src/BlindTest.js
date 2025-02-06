@@ -228,7 +228,10 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     if (!deviceId) {
       console.error("Le lecteur n'est pas encore prêt.");
       return;
+
     }
+    
+    player?.togglePlay()
     setHasStarted(true);
 
     handlePlay({ deviceId, blindtestReady, currentTrackIndex, accessToken });
@@ -336,9 +339,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
       <div className="blindtest">
         {!hasStarted ? (
           <div>
-            <button onClick={() => player?.togglePlay()}>
-  ▶️ Play
-</button>
+
 
             <button
   className="start"
