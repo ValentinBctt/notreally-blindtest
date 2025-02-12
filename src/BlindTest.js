@@ -4,11 +4,12 @@ import { LeaderBoard } from "./LeaderBoard";
 import { RevealTop } from "./Reveal";
 
 const clientId = '4cab9bcc279f483da32c1e5b4bf4bde8'; // Remplacez par votre client ID
-/* const redirectUri = process.env.NODE_ENV === 'production'
+
+const redirectUri = process.env.NODE_ENV === 'production'
   ? 'https://your-app-name.herokuapp.com/callback'
   : 'http://localhost:3000/callback';
- */
-  const redirectUri = 'https://shook-ones-ab7e5e2c1b17.herokuapp.com/callback';
+
+/*   const redirectUri = 'https://shook-ones-ab7e5e2c1b17.herokuapp.com/callback'; */
 
 const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${redirectUri}&scope=streaming%20user-read-playback-state%20user-modify-playback-state%20user-read-private`;
 
@@ -98,8 +99,8 @@ const refreshAccessToken = async (refreshToken) => {
 
 export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIndex, playlistsNames,
   setPlaylistsNames, playlistOwner, setPlaylistOwner, showBlindtest, setShowScoreAdder,
-   setShowListening, setCounterSongs, counterSongs, setShowLeaderBoard, setShowLogo }) {
-  const [hasStarted, setHasStarted] = useState(false);
+   setShowListening, setCounterSongs, counterSongs, showLeaderBoard, setShowLeaderBoard, setShowLogo, setShowNewGame, hasStarted, setHasStarted,  }) {
+
   const [player, setPlayer] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [deviceId, setDeviceId] = useState(null);
@@ -235,8 +236,42 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
     setIsPlaying(!isPlaying);
   }
 
+  const handlePause = async () => {
+    if (!deviceId) {
+      console.error("Le lecteur n'est pas encore prêt.");
+      return;
+    }
+
+    try {
+      await fetch("https://api.spotify.com/v1/me/player/pause", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      setIsPlaying(false);
+    } catch (error) {
+      console.error("Erreur lors de la mise en pause du lecteur :", error);
+    }
+  };
+
+
   useEffect(() => {
     // Lancer un timer de 30 secondes si la musique est en lecture
+
+
+    if (currentTrackIndex === 50 && isPlaying) {
+      setIsPlaying(false);
+
+      setShowLeaderBoard(true);
+      setShowNewGame(true);
+      setCurrentTrackIndex(0);
+      setCounterSongs(1);
+
+    }
+
     if (counterSongs === 5 && isPlaying) {
       const timerLeaderBoard = setTimeout(() => {
         handleNext(
@@ -266,7 +301,9 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
       return () => clearTimeout(timer);
 
     }
-  }, [currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken, isPlaying]);
+
+
+  }, [currentTrackIndex, setCurrentTrackIndex, blindtestReady, deviceId, accessToken, isPlaying, setShowLeaderBoard]);
 
   useEffect(() => {
 
@@ -317,11 +354,19 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
         clearTimeout(timerTrackDetailsHide);
       };
     }
+
+
   }, [isPlaying, currentTrackIndex, setShowTrackDetails, setShowScoreAdder, counterSongs, setCounterSongs, setIsPlaying]);
 
   const handleShowLogo = () => {
     setShowLogo(false);
   }
+
+  const handleShowNewGame = () => {
+    setShowNewGame(false)
+  }
+
+
 
   if (!showBlindtest) {
     return null;
@@ -332,7 +377,7 @@ export function BlindTest({ blindtestReady, currentTrackIndex, setCurrentTrackIn
       <div className="blindtest">
         {!hasStarted ? (
           <div>
-            <button className="start" onClick={() => { handleStart(); handleIsPlaying(); handleShowLogo() }}>Start Blind Test</button>
+            <button className="start" onClick={() => { handleStart(); handleIsPlaying(); handleShowLogo(); handleShowNewGame() }}>Start Blind Test</button>
             <p>If it doesn't work, clear your cookies and refresh the page</p>
           </div>
         ) : (

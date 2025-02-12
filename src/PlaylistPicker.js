@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNames, setPlaylistsNames, playlistOwner,
-  setPlaylistOwner, showPlaylistPicker, setShowPlaylistPicker, setShowBlindtest, setShowScoreAdder, setShowAddPlayer,  }) {
+export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNames, setPlaylistsNames, playlistOwner, setHasStarted,
+  setPlaylistOwner, showPlaylistPicker, setShowPlaylistPicker, setShowBlindtest, setShowScoreAdder, setShowAddPlayer, showNewGame,
+   setShowNewGame, showLeaderBoard, setShowLeaderBoard, scores, setScores }) {
   let accessToken = null;
   let tokenExpiryTime = null;
 
@@ -119,6 +120,68 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
     return data.owner.display_name;
   };
 
+  // Fonction pour récupérer le titre de la playlist Deezer
+  const fetchDeezerPlaylistName = async (playlistId) => {
+    try {
+      const response = await fetch(`http://localhost:3001/deezer/playlist/${playlistId}`);
+      const data = await response.json();
+      console.log("Réponse complète de Deezer:", data); // Ajoute ce log pour voir la structure complète
+
+      // Si le titre n'est pas trouvé, attribue un nom par défaut
+      if (data && data.title) {
+        return data.title; // Retourne le titre si disponible
+      } else {
+        console.warn('Deezer playlist name not found in response, assigning default name');
+        return 'Deezer Playlist'; // Nom par défaut si aucun titre n'est trouvé
+      }
+    } catch (error) {
+      console.error('Failed to fetch Deezer playlist name:', error);
+      return 'Deezer Playlist'; // Nom par défaut en cas d'erreur
+    }
+  };
+
+  const fetchDeezerPlaylistOwner = async (playlistId) => {
+    try {
+      const response = await fetch(`http://localhost:3001/deezer/playlist/${playlistId}`);
+      const data = await response.json();
+      console.log("Réponse complète de Deezer:", data); // Ajoute ce log pour voir la structure complète
+
+      // Si le créateur est trouvé, retourne son nom
+      if (data && data.creator && data.creator.name) {
+        return data.creator.name; // Retourne le nom du créateur si disponible
+      } else {
+        console.warn('Deezer playlist owner not found in response, assigning default owner');
+        return 'Deezer User'; // Nom par défaut si aucun propriétaire n'est trouvé
+      }
+    } catch (error) {
+      console.error('Failed to fetch Deezer playlist owner:', error);
+      return 'Deezer User'; // Nom par défaut en cas d'erreur
+    }
+  };
+
+  const fetchDeezerPlaylistTracks = async (playlistId) => {
+    try {
+      const response = await fetch(`http://localhost:3001/deezer/playlist/${playlistId}`);
+
+      // Vérifie si la réponse est un succès
+      if (!response.ok) {
+        console.error('Failed to fetch Deezer playlist tracks:', response.statusText);
+        return [];
+      }
+
+      // Récupère les pistes du JSON
+      const data = await response.json();
+
+      // Si les pistes sont directement dans la réponse
+      const tracks = data.tracks || []; // Supposons que les pistes soient dans un champ 'tracks'
+
+      return tracks;
+    } catch (error) {
+      console.error('Failed to fetch Deezer playlist tracks:', error);
+      return [];
+    }
+  };
+
   const [playlistLink, setPlaylistLink] = useState("");
   const [tracks, setTracks] = useState([]);
   const [blindtest, setBlindtest] = useState([]);
@@ -139,47 +202,87 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
     setIsLoading(true); // Début du chargement
     const playlistId = playlistLink.split('/').pop().split('?')[0];
 
-    // Fetch playlist name
-    const fetchedName = await fetchPlaylistName(playlistId);
-    if (!fetchedName) {
-      console.error('Failed to fetch playlist name');
+    // Vérifier si le lien appartient à Deezer ou Spotify
+    if (playlistLink.includes('spotify.com')) {
+      // Spotify Playlist Logic
+      const fetchedName = await fetchPlaylistName(playlistId);
+      if (!fetchedName) {
+        console.error('Failed to fetch playlist name from Spotify');
+        setIsLoading(false); // Fin du chargement
+        return;
+      }
+
+      setPlaylistsNames((prevNames) => [fetchedName, ...prevNames]);
+
+      const fetchedOwner = await fetchPlaylistOwner(playlistId);
+      if (!fetchedOwner) {
+        console.error('Failed to fetch playlist owner from Spotify');
+        setIsLoading(false); // Fin du chargement
+        return;
+      }
+
+      setPlaylistOwner((prevNames) => [fetchedOwner, ...prevNames]);
+
+      const fetchedTracks = await fetchPlaylistTracks(playlistId);
+      if (!fetchedTracks) {
+        console.error('Failed to fetch playlist tracks from Spotify');
+        setIsLoading(false); // Fin du chargement
+        return;
+      }
+
+      const fetchedBlindtest = fetchedTracks.map(track => ({
+        url: track.track.external_urls.spotify,
+      }));
+
+      setTracks((prevTracks) => [...prevTracks, ...fetchedTracks]);
+      setBlindtest((prevBlindtest) => [...prevBlindtest, ...fetchedBlindtest]);
+      const blindtestEntry = {
+        owner: fetchedOwner,
+        tracks: fetchedBlindtest
+      };
+
+      setBlindtest((prevBlindtest) => [...prevBlindtest, blindtestEntry]);
+      console.log('Fetched blindtest from Spotify:', blindtestEntry);
+    } else if (playlistLink.includes('deezer.com')) {
+      // Deezer Playlist Logic
+      const fetchedName = await fetchDeezerPlaylistName(playlistId);
+      if (!fetchedName) {
+        console.error('Failed to fetch playlist name from Deezer');
+        setIsLoading(false); // Fin du chargement
+        return;
+      }
+
+      setPlaylistsNames((prevNames) => [fetchedName, ...prevNames]);
+
+      const fetchedOwner = "Deezer User";
+
+      setPlaylistOwner((prevNames) => [fetchedOwner, ...prevNames]);
+
+      const fetchedTracks = await fetchDeezerPlaylistTracks(playlistId);
+      if (!fetchedTracks) {
+        console.error('Failed to fetch playlist tracks from Deezer');
+        setIsLoading(false); // Fin du chargement
+        return;
+      }
+
+      const fetchedBlindtest = fetchedTracks.map(track => ({
+        url: track.spotify_url, // Utilisez le bon champ pour les liens Spotify
+      }));
+
+      setTracks((prevTracks) => [...prevTracks, ...fetchedTracks]);
+      setBlindtest((prevBlindtest) => [...prevBlindtest, ...fetchedBlindtest]);
+      const blindtestEntry = {
+        owner: fetchedOwner,
+        tracks: fetchedBlindtest
+      };
+
+      setBlindtest((prevBlindtest) => [...prevBlindtest, blindtestEntry]);
+      console.log('Fetched blindtest from Deezer:', blindtestEntry);
+    } else {
+      console.error('Invalid playlist link');
       setIsLoading(false); // Fin du chargement
       return;
     }
-
-    setPlaylistsNames((prevNames) => [fetchedName, ...prevNames]);
-
-    // Fetch playlist owner
-    const fetchedOwner = await fetchPlaylistOwner(playlistId);
-    if (!fetchedOwner) {
-      console.error('Failed to fetch playlist owner');
-      setIsLoading(false); // Fin du chargement
-      return;
-    }
-
-    setPlaylistOwner((prevNames) => [fetchedOwner, ...prevNames]);
-
-    // Fetch playlist tracks
-    const fetchedTracks = await fetchPlaylistTracks(playlistId);
-    if (!fetchedTracks) {
-      console.error('Failed to fetch playlist tracks');
-      setIsLoading(false); // Fin du chargement
-      return;
-    }
-
-    const fetchedBlindtest = fetchedTracks.map(track => ({
-      url: track.track.external_urls.spotify,
-    }));
-
-    setTracks((prevTracks) => [...prevTracks, ...fetchedTracks]);
-    setBlindtest((prevBlindtest) => [...prevBlindtest, ...fetchedBlindtest]);
-    const blindtestEntry = {
-      owner: fetchedOwner,
-      tracks: fetchedBlindtest
-    };
-
-    setBlindtest((prevBlindtest) => [...prevBlindtest, blindtestEntry]);
-    console.log('Fetched blindtest:', blindtestEntry);
 
     // Clear the input field
     setPlaylistLink("");
@@ -194,22 +297,11 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
     }
     return shuffledArray;
   }
-  // Fonction pour mélanger la playlist
-  /* const handleMergePlaylist = () => {
-
-    const shuffledBlindtest = shuffleArray(blindtest);
-    setBlindtestReady(shuffledBlindtest);
-    console.log('Shuffled blindtest:', shuffledBlindtest);
-
-    setShowPlaylistPicker(false);
-    setShowAddPlayer(false);
-    setShowBlindtest(true);
-  }; */
 
   const handleMergeEasyPlaylist = () => {
     const mergedBlindtest = [];
     const uniqueTracks = new Set();
-    const maxTracks = 50;
+    const maxTracks = 51;
     let trackCount = 0;
     let attempts = 0;
     const maxAttempts = 1000; // Sécurité pour éviter une boucle infinie
@@ -255,15 +347,44 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
     setShowBlindtest(true);
   };
 
-
-
-
-
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       handleButtonClick();
     }
   };
+
+  const handleHasStarted = () => {
+    setHasStarted(false)
+  }
+
+  useEffect(() => {
+    if (!showLeaderBoard) {
+      console.log("Leaderboard hidden");
+    }
+  }, [showLeaderBoard]);
+
+  const [update, setUpdate] = useState(false);
+
+const handleShowLeaderBoard = () => {
+  setShowLeaderBoard(false);
+  setUpdate((prev) => !prev); // Force un re-render
+};
+
+  const handleShowNewGame = () => {
+    setShowNewGame(false);
+  }
+
+  const handleScoreZero = () => {
+    setScores(0);
+  }
+
+  if (showNewGame) {
+    return (
+      <button className="merge" style={{ postion: 'absolute', bot: '1rem' }} onClick={() => {handleShowLeaderBoard(); handleShowNewGame(); handleScoreZero(); handleMergeEasyPlaylist(); handleHasStarted();}} disabled={isLoading}>
+        {isLoading ? <div className="loader"></div> : "New Game"}
+      </button>
+    );
+  }
 
   if (!showPlaylistPicker) {
     return null;
@@ -272,7 +393,7 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
   return (
     <div className="playlist-link">
       <h1>Playlist link</h1>
-      <h4>Add several Spotify playlists </h4>
+      <h4>Add several Spotify or Deezer playlists </h4>
       <input type="text" value={playlistLink} onChange={handleAddPlaylist} placeholder="Playlist link" onKeyPress={handleKeyPress} />
       <button onClick={handleButtonClick}>Add Playlist</button>
       <div className="list-playlist">
@@ -287,7 +408,7 @@ export function PlaylistPicker({ setBlindtestReady, blindtestReady, playlistsNam
         </ul>
       </div>
       <button className="merge" onClick={handleMergeEasyPlaylist} disabled={isLoading}>
-        {isLoading ? `Adding songs` : "Merge Playlist"}
+        {isLoading ? <div className="loader"></div> : "Merge Playlist"}
       </button>
     </div>
   );

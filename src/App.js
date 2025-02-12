@@ -23,6 +23,7 @@ function App() {
   const [players, setPlayers] = useState([]); // État pour les joueurs
   const [counterSongs, setCounterSongs] = useState(1); // État pour le compteur de chansons
   // Function to add a player with a limit of 9 players
+  const [hasStarted, setHasStarted] = useState(false);
 
   const [scores, setScores] = useState(
     players.reduce((acc, player) => {
@@ -39,6 +40,7 @@ function App() {
   const [showListening, setShowListening] = useState(false);
   const [showLeaderBoard, setShowLeaderBoard] = useState(false);
   const [showLogo, setShowLogo] = useState(true);
+  const [showNewGame, setShowNewGame] = useState(false);
 
   return (
     <Router>
@@ -67,11 +69,18 @@ function App() {
                   setShowScoreAdder={setShowScoreAdder}
                   setShowBlindtest={setShowBlindtest}
                   setShowListening={setShowListening}
+                  setShowLeaderBoard={setShowLeaderBoard}
+                  showLeaderBoard={showLeaderBoard}
+                  showNewGame={showNewGame}
+                  setShowNewGame={setShowNewGame}
                   setBlindtestReady={setBlindtestReady}
                   playlistsNames={playlistsNames}
                   setPlaylistsNames={setPlaylistsNames}
                   playlistOwner={playlistOwner}
                   setPlaylistOwner={setPlaylistOwner}
+                  setHasStarted={setHasStarted}
+                  scores={scores}
+                  setScores={setScores}
                 />
 
                 {/* Passer blindtestReady comme prop */}
@@ -82,7 +91,9 @@ function App() {
                   setShowScoreAdder={setShowScoreAdder}
                   setShowListening={setShowListening}
                   setShowLeaderBoard={setShowLeaderBoard}
+                  showLeaderBoard={showLeaderBoard}
                   setShowLogo={setShowLogo}
+                  setShowNewGame={setShowNewGame}
                   blindtestReady={blindtestReady}
                   currentTrackIndex={currentTrackIndex}
                   setCurrentTrackIndex={setCurrentTrackIndex}
@@ -92,6 +103,9 @@ function App() {
                   setPlaylistOwner={setPlaylistOwner}
                   counterSongs={counterSongs}
                   setCounterSongs={setCounterSongs}
+                  hasStarted={hasStarted}
+                  setHasStarted={setHasStarted}
+
                 />
                 <ScoreAdder
                   showScoreAdder={showScoreAdder}
@@ -127,6 +141,8 @@ function App() {
 }
 
 export default App;
+
+
 
 function Logo({ showLogo }) {
   if (!showLogo) {

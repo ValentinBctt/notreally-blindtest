@@ -25,6 +25,7 @@ body {
   background-size: cover;
   overflow: hidden;
   background-size: 120%;
+  object-fit: cover;
 
 }
 
@@ -50,7 +51,7 @@ h2 {
 
 h4{
   font-family: "ClashDisplay-Medium";
-  font-size: 0.8rem;
+  font-size: 1rem;
   color: white;
   margin: 0.5rem 0 0 0;
 }
@@ -68,7 +69,7 @@ li {
   color: white;
   list-style-type: none;
   margin-top: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 
 }
 
@@ -116,9 +117,54 @@ button {
 
 .add-player button
 
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  display: inline-block; /* Ajout pour éviter les bugs */
+  width: fit-content;
+  font-size: 1.3rem;
+  font-family: monospace;
+
+  color: #0000;
+  -webkit-text-stroke: 1px white;
+  --g: conic-gradient(white 0deg, white 360deg) no-repeat text;
+  background: var(--g) 0, var(--g) 1ch, var(--g) 2ch, var(--g) 3ch, var(--g) 4ch, var(--g) 5ch, var(--g) 6ch;
+  background-position-y: 100%, 0;
+  animation: l16 2s linear infinite alternate;
+}
+
+.loader:before {
+  content: "Loading";
+  display: inline-block; /* Ajout pour forcer l'affichage */
+    display: inline-block; /* Ajout pour éviter les bugs */
+  width: fit-content;
+  font-size: 1.3rem;
+  font-family: "ClashDisplay-Medium";
+
+
+  color: #0000;
+  -webkit-text-stroke: 0.5px white;
+  --g: conic-gradient(white 0deg, white 360deg) no-repeat text;
+  background: var(--g) 0, var(--g) 1ch, var(--g) 2ch, var(--g) 3ch, var(--g) 4ch, var(--g) 5ch, var(--g) 6ch;
+  background-position-y: 100%, 0;
+  animation: l16 2s linear infinite alternate;
+}
+
+@keyframes l16 {
+  0%     { background-size: 1ch 0   ,1ch 0   ,1ch 0   ,1ch 0   ,1ch 0   ,1ch 0   ,1ch 0   }
+  14.28% { background-size: 0.9ch 100%,1ch 0   ,1ch 0   ,1ch 0   ,1ch 0   ,1ch 0   ,1ch 0   }
+  28.57% { background-size: 1ch 100%, 0.7ch 100%,1ch 0   ,1ch 0   ,1ch 0   ,1ch 0   ,1ch 0   }
+  42.85% { background-size: 1ch 100%,1ch 100%, 1ch 100%,1ch 0   ,1ch 0   ,1ch 0   ,1ch 0   }
+  57.14% { background-size: 1ch 100%,1ch 100%,1ch 100%,1ch 100%,1ch 0   ,1ch 0   ,1ch 0   }
+  71.43% { background-size: 1ch 100%,1ch 100%,1ch 100%,1ch 100%,1ch 100%,1ch 0   ,1ch 0   }
+  85.71% { background-size: 1ch 100%,1ch 100%,1ch 100%,1ch 100%,1ch 100%, 1ch 100%,1ch 0   }
+  100%   { background-size: 1ch 100%,1ch 100%,1ch 100%,1ch 100%,1ch 100%,1ch 100%,1ch 100%}
+}
+
+
 button.merge {
 
-  width: 50%;
+  width: 40%;
 
   border-radius: 50px;
 }
@@ -130,9 +176,9 @@ button.merge {
     }
 
     button.merge {
-      width: 20%;
-      font-size: 1rem!important;
+      width: 30%;
 
+      font-size: 1.2rem!important;
     }
   }
 
@@ -199,7 +245,7 @@ button.start {
   }
   .track-details {
 
-    width: 90%;
+    width: 20rem;
     height: 50%;
     margin: auto 1rem auto 0;
     padding: 3rem 3rem;

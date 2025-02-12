@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { motion } from 'framer-motion';
 
@@ -53,3 +54,36 @@ export function RevealBot({ children, trigger, reverse }) {
     </motion.div>
   );
 }
+
+export const RevealPoint = ({ children, width = "fit-content" }) => {
+  const ref = useRef(null);
+  const { ref: inViewRef, inView: isInView } = useInView(ref, { triggerOnce: true });
+
+  const mainControls = useAnimation();
+
+  useEffect(() => {
+    if (isInView) {
+      mainControls.start("visible");
+    } else {
+      mainControls.start("hidden");
+    }
+  }, [isInView, mainControls]);
+
+  return (
+    <div ref={ref}>
+      <motion.div
+        ref={inViewRef}
+        animate={mainControls}
+        initial="hidden"
+        transition={{ duration: 0.5, delay: 0.25 }}
+        variants={{
+          visible: { opacity: 1, y: 0 },
+          hidden: { opacity: 0, y: 50 },
+        }}
+        style={{ position: 'absolute', top: '-50px', right: '10px', width: width }}
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+};
