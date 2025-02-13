@@ -393,7 +393,7 @@ const handleShowLeaderBoard = () => {
   return (
     <div className="playlist-link">
       <h1>Playlist link</h1>
-      <h4>Add several Spotify or Deezer playlists </h4>
+      <h4>Add several Spotify playlists </h4>
       <input type="text" value={playlistLink} onChange={handleAddPlaylist} placeholder="Playlist link" onKeyPress={handleKeyPress} />
       <button onClick={handleButtonClick}>Add Playlist</button>
       <div className="list-playlist">

@@ -152,7 +152,7 @@ function Logo({ showLogo }) {
   return (
     <RevealTop>
     <img
-      src="assets/Shook Ones Logo.svg"
+      src="assets/Shook Ones Logo2.svg"
       alt="Shook Ones Logo"
       className="SO-logo"
     />
